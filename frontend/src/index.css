@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; font-family: "Ubuntu", sans-serif; }
+
+  ::-webkit-scrollbar       { width: 4px; }
+  ::-webkit-scrollbar-track { background: #1a103f; }
+  ::-webkit-scrollbar-thumb { background: #e779c1; border-radius: 2px; }
+  ::selection                { background: rgba(231,121,193,0.25); }
+}
+
+@layer components {
+  /* ── Layout ── */
+  .section-pad { @apply py-20 px-[6vw]; }
+  .container-md { @apply max-w-5xl mx-auto; }
+
+  /* ── Typography ── */
+  .label-mono {
+    @apply font-mono text-[11px] tracking-[3px] uppercase text-primary mb-2.5 block;
+  }
+  .section-title {
+    @apply font-ubuntu font-bold leading-tight mb-12;
+    font-size: clamp(30px, 5vw, 48px);
+  }
+
+  /* ── Cards ── */
+  .sw-card {
+    @apply rounded-2xl border border-primary/15 bg-white/[0.03]
+           transition-all duration-300;
+  }
+  .sw-card:hover {
+    @apply border-primary/40 -translate-y-1;
+    box-shadow: 0 14px 44px rgba(231,121,193,0.12);
+  }
+
+  .sw-card-s {
+    @apply rounded-xl border border-secondary/12 bg-white/[0.02]
+           transition-all duration-300;
+  }
+  .sw-card-s:hover { @apply border-secondary/35 -translate-y-1; }
+
+  /* ── Inputs ── */
+  .sw-input {
+    @apply input input-bordered input-primary w-full bg-white/5 placeholder:text-white/20;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 14px;
+  }
+  .sw-textarea {
+    @apply textarea textarea-primary w-full bg-white/5 placeholder:text-white/20;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 14px;
+    resize: vertical;
+  }
+
+  /* ── Filter pills ── */
+  .filter-pill {
+    @apply flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-primary/20
+           text-white/50 text-[13px] font-medium bg-transparent cursor-pointer
+           transition-all duration-200;
+    font-family: "Ubuntu", sans-serif;
+  }
+  .filter-pill:hover { @apply border-primary/50 text-white/80; }
+  .filter-pill.active { @apply border-primary bg-primary/15 text-primary; }
+  .filter-count {
+    @apply bg-primary/20 rounded-full px-1.5 text-[11px];
+    font-family: "Ubuntu Mono", monospace;
+  }
+  .filter-pill.active .filter-count { @apply bg-primary/35; }
+
+  /* ── Blog card ── */
+  .blog-card {
+    @apply rounded-xl border border-secondary/12 bg-white/[0.025]
+           overflow-hidden cursor-pointer transition-all duration-300;
+  }
+  .blog-card:hover {
+    @apply border-secondary/35 -translate-y-1;
+    box-shadow: 0 12px 36px rgba(88,199,243,0.1);
+  }
+
+  /* ── Available pulse ── */
+  .pulse-dot {
+    @apply inline-block w-2 h-2 rounded-full bg-secondary;
+    animation: pulse-anim 2s infinite;
+  }
+
+  /* ── Section divider ── */
+  .sw-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(231,121,193,0.25), rgba(88,199,243,0.25), transparent);
+  }
+
+  /* ── Dot background ── */
+  .sw-grid-bg {
+    background-image:
+      linear-gradient(rgba(231,121,193,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,199,243,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* ── Admin sidebar link ── */
+  .admin-link {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium
+           text-white/60 transition-all duration-200 cursor-pointer;
+    font-family: "Ubuntu", sans-serif;
+  }
+  .admin-link:hover  { @apply bg-primary/10 text-white/90; }
+  .admin-link.active { @apply bg-primary/15 text-primary; }
+}
+
+@layer utilities {
+  .font-ubuntu { font-family: "Ubuntu", sans-serif; }
+  .font-mono   { font-family: "Ubuntu Mono", monospace; }
+}
+
+/* ── Animations ── */
+@keyframes pulse-anim {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(88,199,243,0.6); }
+  50%       { box-shadow: 0 0 0 8px rgba(88,199,243,0); }
+}
+
+@keyframes fade-up   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+@keyframes fade-down { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:none; } }
+@keyframes fade-in   { from { opacity:0; } to { opacity:1; } }
+@keyframes slide-in-right { from { transform:translateX(100%); } to { transform:none; } }
+
+.anim-fade-up   { animation: fade-up   .6s ease both; }
+.anim-fade-down { animation: fade-down .5s ease both; }
+
+/* Hero stagger delays */
+.hero-1 { animation: fade-down .5s  .1s  ease both; }
+.hero-2 { animation: fade-up  .6s  .22s ease both; }
+.hero-3 { animation: fade-up  .6s  .36s ease both; }
+.hero-4 { animation: fade-up  .6s  .5s  ease both; }
+.hero-5 { animation: fade-up  .6s  .62s ease both; }
+.hero-6 { animation: fade-up  .6s  .74s ease both; }
+
+/* Title rotation fade */
+.title-visible { opacity:1; transform:none; transition: opacity .35s, transform .35s; }
+.title-hidden  { opacity:0; transform:translateY(10px); transition: opacity .35s, transform .35s; }
+
+/* DaisyUI font overrides */
+.btn      { font-family: "Ubuntu", sans-serif !important; font-weight: 700 !important; }
+.input    { font-family: "Ubuntu", sans-serif !important; }
+.textarea { font-family: "Ubuntu", sans-serif !important; }
+.badge    { font-family: "Ubuntu Mono", monospace !important; }
