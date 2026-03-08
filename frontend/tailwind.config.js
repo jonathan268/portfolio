@@ -7,6 +7,7 @@ export default {
         ubuntu: ["Ubuntu", "sans-serif"],
         mono:   ["Ubuntu Mono", "monospace"],
       },
+      secondary: '#3b82f6', // Ex: '#3b82f6' pour un bleu
     },
   },
   plugins: [require("daisyui")],

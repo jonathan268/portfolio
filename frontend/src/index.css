@@ -23,7 +23,7 @@
     @apply font-mono text-[11px] tracking-[3px] uppercase text-primary mb-2.5 block;
   }
   .section-title {
-    @apply font-ubuntu font-bold leading-tight mb-12;
+    @apply mb-12 font-bold leading-tight font-ubuntu;
     font-size: clamp(30px, 5vw, 48px);
   }
 
@@ -33,24 +33,24 @@
            transition-all duration-300;
   }
   .sw-card:hover {
-    @apply border-primary/40 -translate-y-1;
+    @apply -translate-y-1 border-primary/40;
     box-shadow: 0 14px 44px rgba(231,121,193,0.12);
   }
 
   .sw-card-s {
-    @apply rounded-xl border border-secondary/12 bg-white/[0.02]
+    @apply rounded-xl border border-secondary/[0.12] bg-white/[0.02]
            transition-all duration-300;
   }
-  .sw-card-s:hover { @apply border-secondary/35 -translate-y-1; }
+  .sw-card-s:hover { @apply -translate-y-1 border-secondary/35; }
 
   /* ── Inputs ── */
   .sw-input {
-    @apply input input-bordered input-primary w-full bg-white/5 placeholder:text-white/20;
+    @apply w-full input input-bordered input-primary bg-white/5 placeholder:text-white/20;
     font-family: "Ubuntu", sans-serif;
     font-size: 14px;
   }
   .sw-textarea {
-    @apply textarea textarea-primary w-full bg-white/5 placeholder:text-white/20;
+    @apply w-full textarea textarea-primary bg-white/5 placeholder:text-white/20;
     font-family: "Ubuntu", sans-serif;
     font-size: 14px;
     resize: vertical;
@@ -73,11 +73,11 @@
 
   /* ── Blog card ── */
   .blog-card {
-    @apply rounded-xl border border-secondary/12 bg-white/[0.025]
+    @apply rounded-xl border border-secondary/[0.12] bg-white/[0.025]
            overflow-hidden cursor-pointer transition-all duration-300;
   }
   .blog-card:hover {
-    @apply border-secondary/35 -translate-y-1;
+    @apply -translate-y-1 border-secondary/35;
     box-shadow: 0 12px 36px rgba(88,199,243,0.1);
   }
 
