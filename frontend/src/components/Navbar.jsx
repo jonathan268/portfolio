@@ -45,7 +45,7 @@ export default function Navbar() {
   return (
     <>
       <div
-        className="navbar fixed top-0 left-0 right-0 z-50 px-6"
+        className="fixed top-0 left-0 right-0 z-50 px-6 navbar"
         style={{
           height: 66,
           backdropFilter: "blur(20px)",
@@ -64,7 +64,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop nav */}
-        <nav className="navbar-center hidden md:flex gap-1">
+        <nav className="hidden gap-1 navbar-center md:flex">
           {NAV.map(({ id, label }) => (
             <button
               key={id}
@@ -82,9 +82,9 @@ export default function Navbar() {
         </nav>
 
         {/* Actions */}
-        <div className="navbar-end flex gap-2 items-center">
+        <div className="flex items-center gap-2 navbar-end">
           <a
-            href="https://github.com"
+            href="https://github.com/jonathan268"
             target="_blank"
             rel="noreferrer"
             className="btn btn-sm btn-ghost font-mono gap-1.5 text-[13px]"

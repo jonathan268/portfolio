@@ -9,7 +9,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@portfolio.cm";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin@2024!";
 
 async function seed() {
-  await mongoose.connect(process.env.MONGODB_URI);
+  await mongoose.connect(process.env.MONGO_URI_LOCAL);
   console.log("✅ Connected to MongoDB");
 
   // ── Admin ──────────────────────────────────

@@ -1,4 +1,5 @@
 import Reveal from "../components/Reveal";
+import Image from "../assets/profil.jpeg";
 
 export default function AboutSection() {
   return (
@@ -17,7 +18,7 @@ export default function AboutSection() {
               style={{ background: "rgba(231,121,193,0.05)" }}
             >
               <div style={{ position:"absolute", inset:0, background:"radial-gradient(circle at 30% 30%, rgba(231,121,193,0.1), transparent 65%)" }} />
-              <span className="font-ubuntu font-bold text-[68px] text-primary/20 select-none relative z-10">JD</span>
+              <span className="font-ubuntu font-bold text-[68px] text-primary/20 select-none relative z-10"> <img src={Image} alt="photo de profil jonathan" /></span>
               {/* Corner brackets */}
               <div style={{ position:"absolute", top:14, left:14, width:28, height:28, borderTop:"2px solid #e779c1", borderLeft:"2px solid #e779c1", borderRadius:"4px 0 0 0" }} />
               <div style={{ position:"absolute", bottom:14, right:14, width:28, height:28, borderBottom:"2px solid #58c7f3", borderRight:"2px solid #58c7f3", borderRadius:"0 0 4px 0" }} />
@@ -30,8 +31,8 @@ export default function AboutSection() {
               Je suis développeur web fullstack passionné par la création d'applications utiles.
             </p>
             <p className="font-ubuntu font-light text-[15px] text-base-content/50 leading-[1.85] mb-3.5">
-              J'aime construire des <span className="text-secondary font-medium">API robustes</span> et des{" "}
-              <span className="text-primary font-medium">interfaces modernes</span> qui résolvent de vrais problèmes.
+              J'aime construire des <span className="font-medium text-secondary">API robustes</span> et des{" "}
+              <span className="font-medium text-primary">interfaces modernes</span> qui résolvent de vrais problèmes.
             </p>
             <p className="font-ubuntu font-light text-[15px] text-base-content/50 leading-[1.85] mb-10">
               Mon objectif est de rejoindre une équipe où je peux contribuer à des produits réels et continuer à progresser techniquement.

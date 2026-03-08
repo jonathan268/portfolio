@@ -45,8 +45,8 @@ export default function ProjectsSection() {
 
         <Reveal>
           <span className="label-mono">Work</span>
-          <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
-            <h2 className="font-ubuntu font-bold leading-tight" style={{ fontSize:"clamp(30px,5vw,48px)", marginBottom:0 }}>
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+            <h2 className="font-bold leading-tight font-ubuntu" style={{ fontSize:"clamp(30px,5vw,48px)", marginBottom:0 }}>
               Mes Projets
             </h2>
 
@@ -67,12 +67,12 @@ export default function ProjectsSection() {
         </Reveal>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {loading && Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="sw-card p-6 animate-pulse">
-              <div className="h-5 w-1/2 bg-white/10 rounded mb-4" />
-              <div className="h-3 w-full bg-white/5 rounded mb-2" />
-              <div className="h-3 w-3/4 bg-white/5 rounded" />
+            <div key={i} className="p-6 sw-card animate-pulse">
+              <div className="w-1/2 h-5 mb-4 rounded bg-white/10" />
+              <div className="w-full h-3 mb-2 rounded bg-white/5" />
+              <div className="w-3/4 h-3 rounded bg-white/5" />
             </div>
           ))}
 
@@ -83,7 +83,7 @@ export default function ProjectsSection() {
                 <div style={{ height:3, background:ACCENT[p.type] || "#e779c1", position:"absolute", top:0, left:0, right:0 }} />
 
                 {/* Badges */}
-                <div className="absolute top-4 right-4 flex gap-2">
+                <div className="absolute flex gap-2 top-4 right-4">
                   {p.featured && <span className="badge badge-primary text-[10px]">⭐ Featured</span>}
                   <span className={`badge ${BADGE[p.type] || "badge-primary"} badge-outline font-mono text-[10px]`}>
                     {p.type?.toUpperCase()}
@@ -132,8 +132,8 @@ export default function ProjectsSection() {
         </div>
 
         {!loading && filtered.length === 0 && (
-          <div className="text-center py-16 text-white/30">
-            <div className="text-4xl mb-3">🔍</div>
+          <div className="py-16 text-center text-white/30">
+            <div className="mb-3 text-4xl"></div>
             <p className="font-mono text-[13px]">Aucun projet dans cette catégorie.</p>
           </div>
         )}

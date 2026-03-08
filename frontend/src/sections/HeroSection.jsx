@@ -4,7 +4,7 @@ const TITLES = [
   "Fullstack Web Developer",
   "SaaS Builder",
   "API Architect",
-  "African Tech Creator 🌍",
+  "African Tech Creator ",
 ];
 
 const IconGrid = () => (
@@ -42,10 +42,10 @@ export default function HeroSection() {
       <div style={{ position:"absolute", width:600, height:600, borderRadius:"50%", background:"rgba(231,121,193,0.06)", filter:"blur(100px)", top:-250, left:-250, pointerEvents:"none" }} />
       <div style={{ position:"absolute", width:450, height:450, borderRadius:"50%", background:"rgba(88,199,243,0.05)", filter:"blur(90px)", bottom:-180, right:-180, pointerEvents:"none" }} />
 
-      <div className="max-w-5xl w-full relative z-10">
+      <div className="relative z-10 w-full max-w-5xl">
 
         {/* Available */}
-        <div className="hero-1 flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 hero-1">
           <span className="pulse-dot" />
           <span className="font-mono text-[12px] text-secondary tracking-[1.5px]">
             Disponible pour des projets
@@ -53,9 +53,9 @@ export default function HeroSection() {
         </div>
 
         {/* Rotating headline */}
-        <div className="hero-2 overflow-hidden mb-2" style={{ height: 56 }}>
+        <div className="mb-2 overflow-hidden hero-2" style={{ height: 56 }}>
           <h1
-            className="font-ubuntu font-bold text-primary"
+            className="font-bold font-ubuntu text-primary"
             style={{
               fontSize: "clamp(28px,4.5vw,52px)",
               lineHeight: 1.15,
@@ -70,16 +70,16 @@ export default function HeroSection() {
 
         <p className="hero-3 font-ubuntu text-base-content/70 mb-2 max-w-[560px]" style={{ fontSize:"clamp(14px,1.9vw,18px)", lineHeight:1.6 }}>
           I build modern web applications using{" "}
-          <span className="text-secondary font-medium">React</span>,{" "}
-          <span className="text-primary font-medium">Node.js</span> and{" "}
-          <span className="text-accent font-medium">Laravel</span>.
+          <span className="font-medium text-secondary">React</span>,{" "}
+          <span className="font-medium text-primary">Node.js</span> and{" "}
+          <span className="font-medium text-accent">Laravel</span>.
         </p>
         <p className="hero-4 font-ubuntu font-light text-[15px] text-base-content/40 max-w-[500px] mb-11" style={{ lineHeight: 1.75 }}>
           Développeur fullstack basé à Yaoundé, spécialisé dans la création d'applications web, d'API et de dashboards modernes.
         </p>
 
         {/* CTAs */}
-        <div className="hero-5 flex flex-wrap gap-3 mb-14">
+        <div className="flex flex-wrap gap-3 hero-5 mb-14">
           <button className="btn btn-primary rounded-[10px] gap-2" onClick={() => go("projects")}>
             <IconGrid /> Voir mes projets
           </button>
@@ -94,7 +94,7 @@ export default function HeroSection() {
         </div>
 
         {/* Stack pills */}
-        <div className="hero-6 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 hero-6">
           {["React","Node.js","Laravel","MongoDB","MySQL","Docker"].map(t => (
             <span key={t} className="badge badge-outline badge-ghost font-mono text-[11px] text-white/30 border-white/10">{t}</span>
           ))}

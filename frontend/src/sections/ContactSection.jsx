@@ -4,9 +4,9 @@ import Reveal from "../components/Reveal";
 import api from "../api";
 
 const LINKS = [
-  { icon:"📧", label:"Email",    value:"jonathan@dev.cm",         href:"mailto:jonathan@dev.cm" },
-  { icon:"🐙", label:"GitHub",   value:"github.com/jonathan-dev", href:"https://github.com" },
-  { icon:"💼", label:"LinkedIn", value:"in/jonathan-dev",          href:"https://linkedin.com" },
+  { icon:"", label:"Email",    value:"darrenjonathan97@gmail",         href:"mailto:darrenjonathan97@gmail" },
+  { icon:"", label:"GitHub",   value:"github.com/jonathan268", href:"https://github.com/jonathan268" },
+  { icon:"", label:"LinkedIn", value:"in/jonathan-dev",          href:"https://linkedin.com" },
 ];
 
 export default function ContactSection() {
@@ -69,7 +69,7 @@ export default function ContactSection() {
 
           {/* Form */}
           <Reveal dir="right" delay={100}>
-            <div className="sw-card p-8">
+            <div className="p-8 sw-card">
               <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-3.5">
                   {[{k:"name",l:"Nom",p:"Jonathan..."},{k:"email",l:"Email",p:"you@example.com"}].map(({k,l,p}) => (
