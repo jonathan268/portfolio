@@ -2,11 +2,13 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Reveal from "../components/Reveal";
 import api from "../api";
+import { Mail, Github, LinkedIn } from "lucide-react";
+
 
 const LINKS = [
-  { icon:"", label:"Email",    value:"darrenjonathan97@gmail",         href:"mailto:darrenjonathan97@gmail" },
-  { icon:"", label:"GitHub",   value:"github.com/jonathan268", href:"https://github.com/jonathan268" },
-  { icon:"", label:"LinkedIn", value:"in/jonathan-dev",          href:"https://linkedin.com" },
+  { icon:<Mail />, label:"Email",    value:"darrenjonathan97@gmail",         href:"mailto:darrenjonathan97@gmail" },
+  { icon:<Github />, label:"GitHub",   value:"github.com/jonathan268", href:"https://github.com/jonathan268" },
+  { icon:<LinkedIn />, label:"LinkedIn", value:"in/jonathan-dev",          href:"https://linkedin.com" },
 ];
 
 export default function ContactSection() {
