@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const NAV = [
-  { id: "hero",     label: "Home" },
+  { id: "hero",     label: "Acceuil" },
   { id: "about",    label: "À propos" },
   { id: "skills",   label: "Stack" },
   { id: "projects", label: "Projets" },
@@ -49,7 +49,6 @@ export default function Navbar() {
         style={{
           height: 66,
           backdropFilter: "blur(20px)",
-          background: "rgba(26,16,63,0.9)",
           borderBottom: "1px solid rgba(231,121,193,0.12)",
         }}
       >
