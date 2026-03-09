@@ -43,7 +43,7 @@ export default function AboutSection() {
               {[
                 { label:"Expérience",     value:"2+ ans",       color:"text-primary" },
                 { label:"Projets livrés", value:"10+",          color:"text-secondary" },
-                { label:"Localisation",   value:"Yaoundé 🇨🇲",  color:"text-accent" },
+                { label:"Localisation",   value:"Yaoundé",  color:"text-accent" },
               ].map(s => (
                 <div key={s.label} className="px-4 py-3 rounded-xl border border-white/7 bg-white/[0.025]">
                   <div className={`font-ubuntu font-bold text-[22px] leading-none ${s.color}`}>{s.value}</div>

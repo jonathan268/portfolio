@@ -83,7 +83,7 @@ export default function HeroSection() {
           <button className="btn btn-primary rounded-[10px] gap-2" onClick={() => go("projects")}>
             <IconGrid /> Voir mes projets
           </button>
-          <a href="https://github.com" target="_blank" rel="noreferrer"
+          <a href="https://github.com/jonathan268" target="_blank" rel="noreferrer"
             className="btn btn-outline btn-ghost rounded-[10px] gap-2"
             style={{ border:"1px solid rgba(231,121,193,0.3)", color:"#c0bbd8" }}>
             <IconGithub /> GitHub
@@ -106,7 +106,7 @@ export default function HeroSection() {
         className="absolute right-[6vw] top-1/2 -translate-y-1/2 font-mono text-[12px] text-white/20 leading-[2.1] select-none hidden xl:block"
         style={{ opacity: 0.4 }}
       >
-        {`const dev = {\n  name: "Jonathan",\n  location: "Yaoundé 🇨🇲",\n  stack: ["React","Node"],\n  available: true\n}`.split("\n").map((l, i) => <div key={i}>{l}</div>)}
+        {`const dev = {\n  name: "Jonathan",\n  location: "Yaoundé ",\n  stack: ["React","Node"],\n  available: true\n}`.split("\n").map((l, i) => <div key={i}>{l}</div>)}
       </div>
     </section>
   );
