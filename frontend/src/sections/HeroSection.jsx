@@ -95,7 +95,7 @@ export default function HeroSection() {
 
         {/* Stack pills */}
         <div className="flex flex-wrap gap-2 hero-6">
-          {["React","Node.js","Laravel","MongoDB","MySQL","Docker"].map(t => (
+          {["React","Node.js", "Express",  "Laravel","MongoDB","MySQL","Docker"].map(t => (
             <span key={t} className="badge badge-outline badge-ghost font-mono text-[11px] text-white/30 border-white/10">{t}</span>
           ))}
         </div>
