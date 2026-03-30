@@ -20,6 +20,7 @@ app.use("/api/auth", rateLimit({ windowMs: 15 * 60 * 1000, max: 10 }));
 
 // ── Routes ──────────────────────────────────
 app.use("/api/auth",     require("./routes/auth"));
+app.use("/api/upload",   require("./routes/upload"));
 app.use("/api/projects", require("./routes/projects"));
 app.use("/api/blog",     require("./routes/blog"));
 app.use("/api/skills",   require("./routes/skills"));
