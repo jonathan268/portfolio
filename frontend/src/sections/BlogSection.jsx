@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Reveal from "../components/Reveal";
 import api from "../api";
 
@@ -18,8 +19,8 @@ const IconArrow = () => (
 const COVER_COLORS = ["#1a103f","#0d1a2e","#1a1a0d","#1a0d1a"];
 
 export default function BlogSection() {
-  const [posts, setPosts]   = useState([]);
-  const [loading, setLoad]  = useState(true);
+  const [posts, setPosts]  = useState([]);
+  const [loading, setLoad] = useState(true);
 
   useEffect(() => {
     api.get("/blog")
@@ -36,33 +37,42 @@ export default function BlogSection() {
           <h2 className="section-title">Blog</h2>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {loading && Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="blog-card animate-pulse">
               <div className="h-[100px] bg-white/5" />
               <div className="p-5">
-                <div className="h-4 w-2/3 bg-white/10 rounded mb-3" />
+                <div className="w-2/3 h-4 mb-3 rounded bg-white/10" />
                 <div className="h-3 w-full bg-white/5 rounded mb-1.5" />
-                <div className="h-3 w-3/4 bg-white/5 rounded" />
+                <div className="w-3/4 h-3 rounded bg-white/5" />
               </div>
             </div>
           ))}
 
           {!loading && posts.map((post, i) => (
             <Reveal key={post._id} delay={i * 90} dir="up">
-              <div className="blog-card h-full flex flex-col">
+              {/* Toute la card est cliquable */}
+              <Link to={`/blog/${post.slug}`} className="flex flex-col block h-full blog-card group">
                 {/* Cover */}
                 <div
                   className="h-[100px] flex items-center justify-center relative overflow-hidden"
-                  style={{ background: COVER_COLORS[i % COVER_COLORS.length] }}
+                  style={{ background: post.cover ? "transparent" : COVER_COLORS[i % COVER_COLORS.length] }}
                 >
-                  <div className="absolute inset-0 sw-grid-bg opacity-60" />
+                  {post.cover ? (
+                    <>
+                      <img src={post.cover} alt={post.title}
+                        className="absolute inset-0 object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
+                      <div className="absolute inset-0" style={{ background:"rgba(12,6,30,0.45)" }} />
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 sw-grid-bg opacity-60" />
+                  )}
                   <span className="font-mono text-[11px] text-white/15 tracking-[2px] relative z-10">
                     {post.tag?.toUpperCase()}
                   </span>
                 </div>
 
-                <div className="p-5 flex flex-col flex-1">
+                <div className="flex flex-col flex-1 p-5">
                   {/* Meta */}
                   <div className="flex justify-between items-center mb-3.5">
                     <span className={`badge ${TAG_BADGE[post.tag] || "badge-primary"} text-[10px] font-mono`}>
@@ -74,26 +84,23 @@ export default function BlogSection() {
                     </div>
                   </div>
 
-                  <h3 className="font-ubuntu font-bold text-[16px] leading-[1.45] text-base-content/90 mb-2.5">
+                  <h3 className="font-ubuntu font-bold text-[16px] leading-[1.45] text-base-content/90 mb-2.5 group-hover:text-primary transition-colors">
                     {post.title}
                   </h3>
                   <p className="font-ubuntu font-light text-[13px] text-base-content/50 leading-[1.65] mb-5 flex-1">
                     {post.excerpt}
                   </p>
 
-                  <div className="flex justify-between items-center mt-auto">
+                  <div className="flex items-center justify-between mt-auto">
                     <span className="font-mono text-[10px] text-white/25">
                       {new Date(post.createdAt).toLocaleDateString("fr-FR", { day:"numeric", month:"short", year:"numeric" })}
                     </span>
-                    <button
-                      className="flex items-center gap-1.5 font-mono text-[12px] text-primary transition-all duration-150 hover:gap-2.5"
-                      style={{ background:"none", border:"none", cursor:"pointer" }}
-                    >
+                    <span className="flex items-center gap-1.5 font-mono text-[12px] text-primary transition-all duration-150 group-hover:gap-2.5">
                       Lire l'article <IconArrow />
-                    </button>
+                    </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             </Reveal>
           ))}
         </div>

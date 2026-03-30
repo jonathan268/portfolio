@@ -3,7 +3,8 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
-import Home from "./pages/Home";
+import Home          from "./pages/Home";
+import BlogPostPage  from "./pages/BlogPost";
 import AdminLogin     from "./pages/admin/AdminLogin";
 import AdminLayout    from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -18,7 +19,8 @@ export default function App() {
       <Navbar />
       <Routes>
         {/* ── Public ── */}
-        <Route path="/" element={<Home />} />
+        <Route path="/"             element={<Home />} />
+        <Route path="/blog/:slug"   element={<BlogPostPage />} />
 
         {/* ── Admin login ── */}
         <Route path="/admin" element={<AdminLogin />} />

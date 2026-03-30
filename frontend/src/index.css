@@ -147,3 +147,112 @@
 .input    { font-family: "Ubuntu", sans-serif !important; }
 .textarea { font-family: "Ubuntu", sans-serif !important; }
 .badge    { font-family: "Ubuntu Mono", monospace !important; }
+  /* ── Blog prose (Markdown rendu) ── */
+  .blog-prose {
+    color: rgba(255,255,255,0.72);
+    font-family: "Ubuntu", sans-serif;
+    font-size: 16px;
+    line-height: 1.85;
+  }
+  .blog-prose h1,
+  .blog-prose h2,
+  .blog-prose h3,
+  .blog-prose h4 {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 700;
+    color: rgba(255,255,255,0.92);
+    margin-top: 2.2rem;
+    margin-bottom: 0.9rem;
+    line-height: 1.3;
+  }
+  .blog-prose h1 { font-size: clamp(22px,3vw,32px); }
+  .blog-prose h2 { font-size: clamp(18px,2.5vw,26px); }
+  .blog-prose h3 { font-size: 18px; }
+  .blog-prose h2 { border-bottom: 1px solid rgba(231,121,193,0.15); padding-bottom: 0.5rem; }
+
+  .blog-prose p   { margin-bottom: 1.25rem; }
+  .blog-prose a   { color: #e779c1; text-decoration: underline; text-underline-offset: 3px; }
+  .blog-prose a:hover { color: #f0a0d5; }
+
+  .blog-prose strong { color: rgba(255,255,255,0.92); font-weight: 700; }
+  .blog-prose em     { color: rgba(255,255,255,0.75); font-style: italic; }
+
+  .blog-prose ul,
+  .blog-prose ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .blog-prose li { margin-bottom: 0.4rem; }
+  .blog-prose ul li::marker { color: #e779c1; }
+  .blog-prose ol li::marker { color: #e779c1; font-family: "Ubuntu Mono", monospace; }
+
+  .blog-prose blockquote {
+    border-left: 3px solid #e779c1;
+    padding: 0.75rem 1.25rem;
+    margin: 1.5rem 0;
+    background: rgba(231,121,193,0.06);
+    border-radius: 0 8px 8px 0;
+    color: rgba(255,255,255,0.55);
+    font-style: italic;
+  }
+
+  .blog-prose code {
+    font-family: "Ubuntu Mono", "Fira Code", monospace;
+    font-size: 0.88em;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 5px;
+    padding: 0.15em 0.45em;
+    color: #58c7f3;
+  }
+  .blog-prose pre {
+    background: #0d0820;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+  .blog-prose pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.9em;
+    color: rgba(255,255,255,0.82);
+  }
+
+  .blog-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 14px;
+  }
+  .blog-prose th {
+    background: rgba(231,121,193,0.1);
+    color: #e779c1;
+    font-weight: 700;
+    text-align: left;
+    padding: 0.65rem 1rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    font-family: "Ubuntu Mono", monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .blog-prose td {
+    padding: 0.6rem 1rem;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .blog-prose tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  .blog-prose hr {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin: 2rem 0;
+  }
+  .blog-prose img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(255,255,255,0.08);
+  }

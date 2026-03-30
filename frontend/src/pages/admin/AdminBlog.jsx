@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import api from "../../api";
 
 const EMPTY = { title:"", excerpt:"", content:"", tag:"", readTime:"5 min", published:false };
 
+// ── Modal editor ──────────────────────────────────────────────────────────────
 function Modal({ post, onClose, onSave }) {
-  const [form, setForm]   = useState(post ? { ...post } : { ...EMPTY });
+  const [form, setForm]       = useState(post ? { ...post } : { ...EMPTY });
   const [loading, setLoading] = useState(false);
+  const [tab, setTab]         = useState("edit"); // "edit" | "preview"
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -34,7 +38,7 @@ function Modal({ post, onClose, onSave }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background:"rgba(0,0,0,0.75)", backdropFilter:"blur(6px)" }}>
-      <div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto sw-card p-8"
+      <div className="w-full max-w-4xl max-h-[92vh] overflow-y-auto sw-card p-8"
         style={{ background:"#120a2e" }}>
 
         <div className="flex justify-between items-center mb-7">
@@ -43,6 +47,7 @@ function Modal({ post, onClose, onSave }) {
         </div>
 
         <div className="flex flex-col gap-4">
+          {/* Titre */}
           <div>
             <label className="font-mono text-[11px] text-primary tracking-[1px] uppercase block mb-2">Titre</label>
             <input className="sw-input" placeholder="JWT + Refresh Tokens : la bonne architecture"
@@ -68,13 +73,51 @@ function Modal({ post, onClose, onSave }) {
               value={form.excerpt} onChange={e => set("excerpt", e.target.value)} />
           </div>
 
+          {/* Éditeur avec tabs Édition / Aperçu */}
           <div>
-            <label className="font-mono text-[11px] text-primary tracking-[1px] uppercase block mb-2">
-              Contenu (Markdown)
-            </label>
-            <textarea className="sw-textarea font-mono text-[13px]" rows={12}
-              placeholder={"# Titre\n\nVotre contenu en Markdown...\n\n## Sous-section\n\n```js\nconst x = 1;\n```"}
-              value={form.content} onChange={e => set("content", e.target.value)} />
+            <div className="flex items-center justify-between mb-2">
+              <label className="font-mono text-[11px] text-primary tracking-[1px] uppercase">
+                Contenu (Markdown)
+              </label>
+              <div className="flex rounded-lg overflow-hidden border border-white/10">
+                {["edit","preview"].map(t => (
+                  <button key={t}
+                    onClick={() => setTab(t)}
+                    className="px-3 py-1 font-mono text-[11px] transition-colors"
+                    style={{
+                      background: tab === t ? "rgba(231,121,193,0.15)" : "transparent",
+                      color:      tab === t ? "#e779c1" : "rgba(255,255,255,0.3)",
+                    }}>
+                    {t === "edit" ? "✏ Éditer" : "👁 Aperçu"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {tab === "edit" ? (
+              <textarea
+                className="sw-textarea font-mono text-[13px]"
+                rows={16}
+                placeholder={"# Titre de l'article\n\nIntroduction...\n\n## Sous-section\n\n```js\nconst x = 1;\n```\n\n> Une citation importante"}
+                value={form.content}
+                onChange={e => set("content", e.target.value)}
+                style={{ fontFamily:"'Ubuntu Mono', monospace" }}
+              />
+            ) : (
+              <div
+                className="blog-prose rounded-xl p-5 overflow-y-auto"
+                style={{
+                  minHeight: 380, maxHeight: 480,
+                  background:"rgba(0,0,0,0.25)",
+                  border:"1px solid rgba(255,255,255,0.08)",
+                }}
+              >
+                {form.content
+                  ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{form.content}</ReactMarkdown>
+                  : <p className="font-mono text-[12px] text-white/20 italic">Rien à prévisualiser — écris quelque chose dans l'onglet Éditer.</p>
+                }
+              </div>
+            )}
           </div>
 
           <label className="flex items-center gap-2.5 cursor-pointer">
@@ -95,6 +138,7 @@ function Modal({ post, onClose, onSave }) {
   );
 }
 
+// ── Main ──────────────────────────────────────────────────────────────────────
 export default function AdminBlog() {
   const [posts, setPosts] = useState([]);
   const [modal, setModal] = useState(null);
@@ -145,10 +189,20 @@ export default function AdminBlog() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
+              {/* Lien aperçu public */}
+              {p.published && (
+                <a href={`/blog/${p.slug}`} target="_blank" rel="noreferrer"
+                  className="btn btn-xs btn-ghost btn-square text-white/30 hover:text-secondary"
+                  title="Voir l'article public">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+              )}
               <button
                 className={`btn btn-xs rounded-full font-mono ${p.published ? "btn-success btn-outline" : "btn-ghost"}`}
-                onClick={() => togglePublish(p)}
-              >
+                onClick={() => togglePublish(p)}>
                 {p.published ? "● Publié" : "○ Brouillon"}
               </button>
               <button className="btn btn-sm btn-ghost btn-square text-white/40 hover:text-white/80" onClick={() => setModal(p)}>
@@ -175,11 +229,9 @@ export default function AdminBlog() {
       </div>
 
       {modal && (
-        <Modal
-          post={modal === "new" ? null : modal}
+        <Modal post={modal === "new" ? null : modal}
           onClose={() => setModal(null)}
-          onSave={() => { setModal(null); load(); }}
-        />
+          onSave={() => { setModal(null); load(); }} />
       )}
     </div>
   );

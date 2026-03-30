@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Reveal from "../components/Reveal";
+import TechIcon from "../components/TechIcon";
 import api from "../api";
 
 const FILTERS = [
@@ -49,15 +50,9 @@ export default function ProjectsSection() {
             <h2 className="font-bold leading-tight font-ubuntu" style={{ fontSize:"clamp(30px,5vw,48px)", marginBottom:0 }}>
               Mes Projets
             </h2>
-
-            {/* Filter pills */}
             <div className="flex flex-wrap gap-2">
               {FILTERS.map(f => (
-                <button
-                  key={f.key}
-                  className={`filter-pill${filter === f.key ? " active" : ""}`}
-                  onClick={() => setFilter(f.key)}
-                >
+                <button key={f.key} className={`filter-pill${filter === f.key ? " active" : ""}`} onClick={() => setFilter(f.key)}>
                   {f.label}
                   <span className="filter-count">{count(f.key)}</span>
                 </button>
@@ -66,14 +61,15 @@ export default function ProjectsSection() {
           </div>
         </Reveal>
 
-        {/* Grid */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {loading && Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="p-6 sw-card animate-pulse">
-              <div className="w-full mb-4 rounded h-44 bg-white/10" />
-              <div className="w-1/2 h-5 mb-4 rounded bg-white/10" />
-              <div className="w-full h-3 mb-2 rounded bg-white/5" />
-              <div className="w-3/4 h-3 rounded bg-white/5" />
+            <div key={i} className="sw-card animate-pulse">
+              <div className="w-full h-44 bg-white/10 rounded-t-2xl" />
+              <div className="p-6">
+                <div className="w-1/2 h-5 mb-4 rounded bg-white/10" />
+                <div className="w-full h-3 mb-2 rounded bg-white/5" />
+                <div className="w-3/4 h-3 rounded bg-white/5" />
+              </div>
             </div>
           ))}
 
@@ -81,35 +77,27 @@ export default function ProjectsSection() {
             <Reveal key={`${filter}-${p._id}`} delay={i * 80} dir="up">
               <div className={`sw-card h-full relative overflow-hidden flex flex-col${p.featured ? " border-primary/40" : ""}`}>
 
-                {/* Image preview OR accent bar */}
+                {/* Image ou barre couleur */}
                 {p.imageUrl ? (
                   <div className="relative w-full overflow-hidden shrink-0" style={{ height: 180 }}>
-                    <img
-                      src={p.imageUrl}
-                      alt={`Aperçu ${p.name}`}
+                    <img src={p.imageUrl} alt={`Aperçu ${p.name}`}
                       className="object-cover w-full h-full"
-                      style={{ transition: "transform 0.5s ease" }}
-                      onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
-                      onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
-                      onError={e => { e.currentTarget.style.display = "none"; }}
+                      style={{ transition:"transform 0.5s ease" }}
+                      onMouseOver={e => e.currentTarget.style.transform="scale(1.05)"}
+                      onMouseOut={e => e.currentTarget.style.transform="scale(1)"}
+                      onError={e => { e.currentTarget.parentElement.style.display="none"; }}
                     />
-                    {/* Bottom gradient fade */}
                     <div style={{
-                      position: "absolute", inset: 0,
-                      background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(18,10,46,0.88) 100%)",
+                      position:"absolute", inset:0,
+                      background:"linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(18,10,46,0.88) 100%)",
                     }} />
-                    {/* Accent line at bottom of image */}
-                    <div style={{
-                      position: "absolute", bottom: 0, left: 0, right: 0,
-                      height: 3, background: ACCENT[p.type] || "#e779c1",
-                    }} />
+                    <div style={{ position:"absolute", bottom:0, left:0, right:0, height:3, background:ACCENT[p.type]||"#e779c1" }} />
                   </div>
                 ) : (
-                  /* Fallback: colored top bar */
-                  <div style={{ height: 3, background: ACCENT[p.type] || "#e779c1" }} />
+                  <div style={{ height:3, background:ACCENT[p.type]||"#e779c1" }} />
                 )}
 
-                {/* Type & Featured badges */}
+                {/* Badges position */}
                 <div className="absolute flex gap-2" style={{ top: p.imageUrl ? 10 : 16, right: p.imageUrl ? 10 : 16 }}>
                   {p.featured && (
                     <span className="badge badge-primary text-[10px]"
@@ -117,7 +105,7 @@ export default function ProjectsSection() {
                       ⭐ Featured
                     </span>
                   )}
-                  <span className={`badge ${BADGE[p.type] || "badge-primary"} badge-outline font-mono text-[10px]`}
+                  <span className={`badge ${BADGE[p.type]||"badge-primary"} badge-outline font-mono text-[10px]`}
                     style={ p.imageUrl ? { backdropFilter:"blur(6px)", background:"rgba(0,0,0,0.45)" } : {} }>
                     {p.type?.toUpperCase()}
                   </span>
@@ -125,23 +113,26 @@ export default function ProjectsSection() {
 
                 <div className={`p-6 flex flex-col flex-1 ${p.imageUrl ? "pt-5" : "pt-7"}`}>
                   <h3 className="font-ubuntu font-bold text-[20px] text-base-content/90 mb-1">{p.name}</h3>
-                  <p className="font-mono text-[11px] tracking-[0.5px] mb-3.5" style={{ color: ACCENT[p.type] }}>{p.tagline}</p>
+                  <p className="font-mono text-[11px] tracking-[0.5px] mb-3.5" style={{ color:ACCENT[p.type] }}>{p.tagline}</p>
                   <p className="font-ubuntu font-light text-[14px] text-base-content/50 leading-[1.7] mb-4">{p.description}</p>
 
                   <ul className="flex flex-col gap-1.5 mb-5">
                     {p.features?.map(f => (
                       <li key={f} className="flex items-start gap-2 font-ubuntu font-light text-[13px] text-base-content/60">
-                        <span className="font-bold shrink-0 mt-0.5" style={{ color: ACCENT[p.type] }}>→</span>
+                        <span className="font-bold shrink-0 mt-0.5" style={{ color:ACCENT[p.type] }}>→</span>
                         {f}
                       </li>
                     ))}
                   </ul>
 
-                  <div className="flex flex-wrap gap-1.5 mb-5">
-                    {p.stack?.map(s => (
-                      <span key={s} className={`badge ${BADGE[p.type] || "badge-primary"} badge-outline font-mono text-[10px]`}>{s}</span>
-                    ))}
-                  </div>
+                  {/* ── Tech icons ─────────────────── */}
+                  {p.stack?.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 mb-5">
+                      {p.stack.map(s => (
+                        <TechIcon key={s} name={s} size={18} accentColor={ACCENT[p.type]} />
+                      ))}
+                    </div>
+                  )}
 
                   <div className="flex gap-2 mt-auto">
                     {p.live && (
