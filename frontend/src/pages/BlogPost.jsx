@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import api from "../api";
@@ -52,20 +52,47 @@ const IconCalendar = () => (
 
 export default function BlogPostPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoad] = useState(true);
   const [notFound, set404] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Réinitialiser les estados quand le slug change
+    setPost(null);
+    set404(false);
+    setLoad(true);
+
     api
       .get(`/blog/${slug}`)
-      .then((r) => setPost(r.data.data))
+      .then((r) => {
+        setPost(r.data.data);
+        set404(false);
+      })
       .catch((err) => {
-        if (err.response?.status === 404) set404(true);
+        if (err.response?.status === 404) {
+          set404(true);
+        }
+        setPost(null);
       })
       .finally(() => setLoad(false));
   }, [slug]);
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
+  const handleBlogLink = () => {
+    navigate("/?section=blog", { replace: false });
+    setTimeout(() => {
+      const blogSection = document.getElementById("blog");
+      if (blogSection) {
+        blogSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
 
   if (loading) return <BlogSkeleton />;
   if (notFound) return <NotFound />;
@@ -109,12 +136,12 @@ export default function BlogPostPage() {
 
         <div className="relative z-10 w-full max-w-3xl px-6 pt-24 pb-10 mx-auto">
           {/* Back button */}
-          <Link
-            to="/#blog"
-            className="inline-flex items-center gap-2 font-mono text-[12px] text-white/40 hover:text-white/80 mb-6 transition-colors"
+          <button
+            onClick={handleBackClick}
+            className="inline-flex items-center gap-2 font-mono text-[12px] text-white/40 hover:text-white/80 mb-6 transition-colors bg-none border-none cursor-pointer"
           >
-            <IconArrowLeft /> Retour au blog
-          </Link>
+            <IconArrowLeft /> Retour
+          </button>
 
           {/* Tag */}
           <span
@@ -178,12 +205,12 @@ export default function BlogPostPage() {
           className="flex items-center justify-between pt-8 mt-16"
           style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
         >
-          <Link
-            to="/#blog"
-            className="inline-flex items-center gap-2 font-mono text-[13px] text-white/40 hover:text-white/70 transition-colors"
+          <button
+            onClick={handleBlogLink}
+            className="inline-flex items-center gap-2 font-mono text-[13px] text-white/40 hover:text-white/70 transition-colors bg-none border-none cursor-pointer"
           >
             <IconArrowLeft /> Tous les articles
-          </Link>
+          </button>
           <span className="font-mono text-[11px] text-white/20">
             Jonathan · {date}
           </span>

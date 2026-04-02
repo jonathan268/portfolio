@@ -52,6 +52,7 @@ export default function CommentSection({ postSlug }) {
   const fetchComments = async () => {
     try {
       const res = await api.get(`/blog/${postSlug}/comments`);
+      console.log("📝 Commentaires chargés:", res.data.data); // DEBUG
       setComments(res.data.data || []);
     } catch (err) {
       console.error("Erreur lors du chargement des commentaires", err);
@@ -93,7 +94,7 @@ export default function CommentSection({ postSlug }) {
   };
 
   const hasLiked = (comment) => {
-    return likerEmail && comment.likes.includes(likerEmail);
+    return likerEmail && comment.likes && comment.likes.includes(likerEmail);
   };
 
   const handleChange = (e) => {
