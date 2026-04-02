@@ -11,6 +11,7 @@ const commentSchema = new mongoose.Schema(
     email: { type: String, required: true, trim: true },
     content: { type: String, required: true, trim: true },
     approved: { type: Boolean, default: false }, // Modération
+    likes: { type: [String], default: [] }, // Array of emails who liked
   },
   { timestamps: true },
 );
