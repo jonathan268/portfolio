@@ -3,15 +3,16 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
-import Home          from "./pages/Home";
-import BlogPostPage  from "./pages/BlogPost";
-import AdminLogin     from "./pages/admin/AdminLogin";
-import AdminLayout    from "./pages/admin/AdminLayout";
+import Home from "./pages/Home";
+import BlogPostPage from "./pages/BlogPost";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProjects  from "./pages/admin/AdminProjects";
-import AdminBlog      from "./pages/admin/AdminBlog";
-import AdminSkills    from "./pages/admin/AdminSkills";
-import AdminMessages  from "./pages/admin/AdminMessages";
+import AdminProjects from "./pages/admin/AdminProjects";
+import AdminBlog from "./pages/admin/AdminBlog";
+import AdminSkills from "./pages/admin/AdminSkills";
+import AdminMessages from "./pages/admin/AdminMessages";
+import AdminComments from "./pages/admin/AdminComments";
 
 export default function App() {
   return (
@@ -19,8 +20,8 @@ export default function App() {
       <Navbar />
       <Routes>
         {/* ── Public ── */}
-        <Route path="/"             element={<Home />} />
-        <Route path="/blog/:slug"   element={<BlogPostPage />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
 
         {/* ── Admin login ── */}
         <Route path="/admin" element={<AdminLogin />} />
@@ -35,10 +36,11 @@ export default function App() {
           }
         >
           <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="projects"  element={<AdminProjects />} />
-          <Route path="blog"      element={<AdminBlog />} />
-          <Route path="skills"    element={<AdminSkills />} />
-          <Route path="messages"  element={<AdminMessages />} />
+          <Route path="projects" element={<AdminProjects />} />
+          <Route path="blog" element={<AdminBlog />} />
+          <Route path="skills" element={<AdminSkills />} />
+          <Route path="comments" element={<AdminComments />} />
+          <Route path="messages" element={<AdminMessages />} />
         </Route>
 
         {/* ── 404 ── */}
