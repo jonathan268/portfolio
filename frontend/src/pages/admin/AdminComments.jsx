@@ -6,18 +6,27 @@ export default function AdminComments() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const res = await api.get("/blog/admin/comments/all");
+        setComments(res.data.data || []);
+        console.log("✅ Commentaires admin:", res.data.data);
+      } catch (err) {
+        console.error("Erreur lors du chargement des commentaires", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchComments();
   }, []);
 
-  const fetchComments = async () => {
+  const fetchCommentsRefresh = async () => {
     try {
       const res = await api.get("/blog/admin/comments/all");
       setComments(res.data.data || []);
-      console.log("✅ Commentaires admin:", res.data.data);
     } catch (err) {
       console.error("Erreur lors du chargement des commentaires", err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -26,7 +35,7 @@ export default function AdminComments() {
       await api.put(`/blog/admin/comments/${commentId}`, {
         approved: !currentApproval,
       });
-      fetchComments();
+      fetchCommentsRefresh();
     } catch (err) {
       console.error("Erreur lors de l'approbation", err);
     }
@@ -36,7 +45,7 @@ export default function AdminComments() {
     if (window.confirm("Confirmer la suppression ?")) {
       try {
         await api.delete(`/blog/admin/comments/${commentId}`);
-        fetchComments();
+        fetchCommentsRefresh();
       } catch (err) {
         console.error("Erreur lors de la suppression", err);
       }

@@ -1,3 +1,4 @@
+import { Terminal } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -55,7 +56,7 @@ export default function Navbar() {
         {/* Logo */}
         <div className="navbar-start">
           <button onClick={() => go("hero")} className="flex items-center gap-2.5" style={{ background:"none", border:"none", cursor:"pointer" }}>
-            <div className="btn btn-primary btn-sm btn-square" style={{ borderRadius: 10, fontSize: 16, minHeight: "unset", height: 36, width: 36 }}>J</div>
+            <div className="btn btn-primary btn-sm btn-square" style={{ borderRadius: 10, fontSize: 16, minHeight: "unset", height: 36, width: 36 }}><Terminal /> </div>
             <span className="font-ubuntu font-bold text-[17px] text-base-content/90">
               Jonathan<span className="text-primary">.</span>
             </span>

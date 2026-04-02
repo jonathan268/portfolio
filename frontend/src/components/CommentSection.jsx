@@ -43,23 +43,24 @@ export default function CommentSection({ postSlug }) {
 
   // Charger les commentaires approuvés
   useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const res = await api.get(`/blog/${postSlug}/comments`);
+        console.log("📝 Commentaires chargés:", res.data.data);
+        setComments(res.data.data || []);
+      } catch (err) {
+        console.error("Erreur lors du chargement des commentaires", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchComments();
+
     // Charger l'email du localStorage s'il existe
     const savedEmail = localStorage.getItem("likerEmail");
     if (savedEmail) setLikerEmail(savedEmail);
   }, [postSlug]);
-
-  const fetchComments = async () => {
-    try {
-      const res = await api.get(`/blog/${postSlug}/comments`);
-      console.log("📝 Commentaires chargés:", res.data.data); // DEBUG
-      setComments(res.data.data || []);
-    } catch (err) {
-      console.error("Erreur lors du chargement des commentaires", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLike = async (commentId) => {
     if (!likerEmail) {
