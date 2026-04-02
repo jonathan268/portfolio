@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import api from "../api";
+import CommentSection from "../components/CommentSection";
 
 const COVER_COLORS = ["#1a103f", "#0d1a2e", "#1a1a0d", "#1a0d1a"];
 const TAG_COLOR = { SaaS: "#e779c1", Security: "#58c7f3", MongoDB: "#47A248" };
@@ -168,6 +169,9 @@ export default function BlogPostPage() {
             {post.content}
           </ReactMarkdown>
         </div>
+
+        {/* Comments Section */}
+        <CommentSection postSlug={post.slug} />
 
         {/* Footer */}
         <div

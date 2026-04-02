@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const BlogPost = require("../models/BlogPost");
+const Comment = require("../models/Comment");
 const auth = require("../middleware/auth");
 
 // ── PUBLIC ──────────────────────────────────
@@ -19,11 +20,66 @@ router.get("/", async (req, res) => {
 // GET /api/blog/:slug
 router.get("/:slug", async (req, res) => {
   try {
-    const post = await BlogPost.findOne({ slug: req.params.slug, published: true });
-    if (!post) return res.status(404).json({ success: false, message: "Article introuvable" });
+    const post = await BlogPost.findOne({
+      slug: req.params.slug,
+      published: true,
+    });
+    if (!post)
+      return res
+        .status(404)
+        .json({ success: false, message: "Article introuvable" });
     res.json({ success: true, data: post });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET /api/blog/:slug/comments
+router.get("/:slug/comments", async (req, res) => {
+  try {
+    const post = await BlogPost.findOne({ slug: req.params.slug });
+    if (!post)
+      return res
+        .status(404)
+        .json({ success: false, message: "Article introuvable" });
+
+    const comments = await Comment.find({
+      blogPostId: post._id,
+      approved: true,
+    }).sort({ createdAt: -1 });
+    res.json({ success: true, data: comments });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /api/blog/:slug/comments (ajouter un commentaire)
+router.post("/:slug/comments", async (req, res) => {
+  try {
+    const { author, email, content } = req.body;
+
+    if (!author || !email || !content) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Tous les champs sont requis" });
+    }
+
+    const post = await BlogPost.findOne({ slug: req.params.slug });
+    if (!post)
+      return res
+        .status(404)
+        .json({ success: false, message: "Article introuvable" });
+
+    const comment = await Comment.create({
+      blogPostId: post._id,
+      author,
+      email,
+      content,
+    });
+
+    res.status(201).json({ success: true, data: comment });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
@@ -32,7 +88,9 @@ router.get("/:slug", async (req, res) => {
 // GET /api/blog/admin/all
 router.get("/admin/all", auth, async (req, res) => {
   try {
-    const posts = await BlogPost.find().select("-content").sort({ createdAt: -1 });
+    const posts = await BlogPost.find()
+      .select("-content")
+      .sort({ createdAt: -1 });
     res.json({ success: true, data: posts });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -43,7 +101,10 @@ router.get("/admin/all", auth, async (req, res) => {
 router.get("/admin/:id", auth, async (req, res) => {
   try {
     const post = await BlogPost.findById(req.params.id);
-    if (!post) return res.status(404).json({ success: false, message: "Article introuvable" });
+    if (!post)
+      return res
+        .status(404)
+        .json({ success: false, message: "Article introuvable" });
     res.json({ success: true, data: post });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -63,8 +124,14 @@ router.post("/", auth, async (req, res) => {
 // PUT /api/blog/:id
 router.put("/:id", auth, async (req, res) => {
   try {
-    const post = await BlogPost.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!post) return res.status(404).json({ success: false, message: "Article introuvable" });
+    const post = await BlogPost.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!post)
+      return res
+        .status(404)
+        .json({ success: false, message: "Article introuvable" });
     res.json({ success: true, data: post });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -75,8 +142,58 @@ router.put("/:id", auth, async (req, res) => {
 router.delete("/:id", auth, async (req, res) => {
   try {
     const post = await BlogPost.findByIdAndDelete(req.params.id);
-    if (!post) return res.status(404).json({ success: false, message: "Article introuvable" });
+    if (!post)
+      return res
+        .status(404)
+        .json({ success: false, message: "Article introuvable" });
     res.json({ success: true, message: "Article supprimé" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ── COMMENTS ADMIN ──────────────────────────
+
+// GET /api/blog/admin/comments/all
+router.get("/admin/comments/all", auth, async (req, res) => {
+  try {
+    const comments = await Comment.find()
+      .populate("blogPostId", "title slug")
+      .sort({ createdAt: -1 });
+    res.json({ success: true, data: comments });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT /api/blog/admin/comments/:id (approuver/rejeter commentaire)
+router.put("/admin/comments/:id", auth, async (req, res) => {
+  try {
+    const { approved } = req.body;
+    const comment = await Comment.findByIdAndUpdate(
+      req.params.id,
+      { approved },
+      { new: true },
+    );
+    if (!comment)
+      return res
+        .status(404)
+        .json({ success: false, message: "Commentaire introuvable" });
+    res.json({ success: true, data: comment });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+// DELETE /api/blog/admin/comments/:id
+router.delete("/admin/comments/:id", auth, async (req, res) => {
+  try {
+    const comment = await Comment.findByIdAndDelete(req.params.id);
+    if (!comment)
+      return res
+        .status(404)
+        .json({ success: false, message: "Commentaire introuvable" });
+    res.json({ success: true, message: "Commentaire supprimé" });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Sparkles, Star } from "lucide-react";
 import Reveal from "../components/Reveal";
 import TechIcon from "../components/TechIcon";
 import api from "../api";
@@ -102,7 +103,7 @@ export default function ProjectsSection() {
                   {p.featured && (
                     <span className="badge badge-primary text-[10px]"
                       style={ p.imageUrl ? { backdropFilter:"blur(6px)", background:"rgba(0,0,0,0.45)" } : {} }>
-                      ⭐ Featured
+                      <Sparkles className="w-4 h-4" /> Nouveau
                     </span>
                   )}
                   <span className={`badge ${BADGE[p.type]||"badge-primary"} badge-outline font-mono text-[10px]`}
