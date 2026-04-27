@@ -4,255 +4,155 @@
 
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; font-family: "Ubuntu", sans-serif; }
+  
+  html { 
+    scroll-behavior: smooth; 
+    font-family: "Inter", sans-serif;
+    background-color: #050505;
+    color: #ffffff;
+  }
 
   ::-webkit-scrollbar       { width: 4px; }
-  ::-webkit-scrollbar-track { background: #1a103f; }
-  ::-webkit-scrollbar-thumb { background: #e779c1; border-radius: 2px; }
-  ::selection                { background: rgba(231,121,193,0.25); }
+  ::-webkit-scrollbar-track { background: #050505; }
+  ::-webkit-scrollbar-thumb { background: #4facfe; border-radius: 2px; }
+  ::selection               { background: rgba(79, 172, 254, 0.25); color: #fff; }
 }
 
 @layer components {
   /* ── Layout ── */
-  .section-pad { @apply py-20 px-[6vw]; }
-  .container-md { @apply max-w-5xl mx-auto; }
+  .section-pad { @apply py-24 px-[6vw]; }
+  .container-md { @apply max-w-6xl mx-auto; }
+
+  /* ── UI Glass / Bento Elements ── */
+  .glass-panel {
+    @apply relative border border-white/10 bg-white/5 backdrop-blur-xl rounded-[24px] overflow-hidden transition-all duration-500 ease-out;
+  }
+  .glass-panel:hover {
+    @apply border-white/20 bg-white/[0.07] -translate-y-1;
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 0 20px rgba(79, 172, 254, 0.1);
+  }
+
+  /* Specially for clickable cards like projects/blog */
+  .bento-card {
+    @apply glass-panel group cursor-pointer flex flex-col h-full;
+  }
+  .bento-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none;
+    background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
+  }
 
   /* ── Typography ── */
+  .font-display { font-family: "Outfit", sans-serif; }
+  .font-sans    { font-family: "Inter", sans-serif; }
+  .font-mono    { font-family: "Fira Code", monospace; }
+
   .label-mono {
-    @apply font-mono text-[11px] tracking-[3px] uppercase text-primary mb-2.5 block;
+    @apply font-mono text-[12px] tracking-[4px] uppercase text-neon-violet mb-4 block opacity-80;
   }
   .section-title {
-    @apply mb-12 font-bold leading-tight font-ubuntu;
-    font-size: clamp(30px, 5vw, 48px);
+    @apply font-display font-bold leading-[1.1] mb-12 tracking-tight;
+    font-size: clamp(36px, 5vw, 56px);
+  }
+  
+  .gradient-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-neon-violet to-neon-pink;
+    background-size: 200% auto;
+    animation: text-shine 5s linear infinite;
   }
 
-  /* ── Cards ── */
-  .sw-card {
-    @apply rounded-2xl border border-primary/15 bg-white/[0.03]
-           transition-all duration-300;
+  /* ── Inputs (Contact, etc) ── */
+  .glass-input {
+    @apply w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-white/30 backdrop-blur-md outline-none transition-all duration-300;
+    font-family: "Inter", sans-serif;
   }
-  .sw-card:hover {
-    @apply -translate-y-1 border-primary/40;
-    box-shadow: 0 14px 44px rgba(231,121,193,0.12);
+  .glass-input:focus {
+    @apply border-neon-cyan/50 bg-white/10;
+    box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.1);
+  }
+  .glass-textarea {
+    @apply glass-input resize-none min-h-[140px];
   }
 
-  .sw-card-s {
-    @apply rounded-xl border border-secondary/[0.12] bg-white/[0.02]
-           transition-all duration-300;
-  }
-  .sw-card-s:hover { @apply -translate-y-1 border-secondary/35; }
-
-  /* ── Inputs ── */
-  .sw-input {
-    @apply w-full input input-bordered input-primary bg-white/5 placeholder:text-white/20;
-    font-family: "Ubuntu", sans-serif;
-    font-size: 14px;
-  }
-  .sw-textarea {
-    @apply w-full textarea textarea-primary bg-white/5 placeholder:text-white/20;
-    font-family: "Ubuntu", sans-serif;
-    font-size: 14px;
-    resize: vertical;
+  /* ── Divider ── */
+  .glass-divider {
+    @apply h-[1px] w-full;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
   }
 
   /* ── Filter pills ── */
-  .filter-pill {
-    @apply flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-primary/20
-           text-white/50 text-[13px] font-medium bg-transparent cursor-pointer
-           transition-all duration-200;
-    font-family: "Ubuntu", sans-serif;
+  .neo-pill {
+    @apply flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-white/60 text-[14px] font-medium backdrop-blur-md transition-all duration-300;
   }
-  .filter-pill:hover { @apply border-primary/50 text-white/80; }
-  .filter-pill.active { @apply border-primary bg-primary/15 text-primary; }
-  .filter-count {
-    @apply bg-primary/20 rounded-full px-1.5 text-[11px];
-    font-family: "Ubuntu Mono", monospace;
-  }
-  .filter-pill.active .filter-count { @apply bg-primary/35; }
+  .neo-pill:hover { @apply border-white/20 text-white bg-white/10; }
+  .neo-pill.active { @apply border-neon-cyan/40 bg-neon-cyan/10 text-neon-cyan; box-shadow: 0 0 15px rgba(0, 242, 254, 0.15); }
 
-  /* ── Blog card ── */
-  .blog-card {
-    @apply rounded-xl border border-secondary/[0.12] bg-white/[0.025]
-           overflow-hidden cursor-pointer transition-all duration-300;
+  .neo-count {
+    @apply bg-white/10 rounded-full px-2 py-0.5 text-[11px] font-mono text-white/80;
   }
-  .blog-card:hover {
-    @apply -translate-y-1 border-secondary/35;
-    box-shadow: 0 12px 36px rgba(88,199,243,0.1);
-  }
-
-  /* ── Available pulse ── */
-  .pulse-dot {
-    @apply inline-block w-2 h-2 rounded-full bg-secondary;
-    animation: pulse-anim 2s infinite;
-  }
-
-  /* ── Section divider ── */
-  .sw-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(231,121,193,0.25), rgba(88,199,243,0.25), transparent);
-  }
-
-  /* ── Dot background ── */
-  .sw-grid-bg {
-    background-image:
-      linear-gradient(rgba(231,121,193,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(88,199,243,0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-
-  /* ── Admin sidebar link ── */
-  .admin-link {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium
-           text-white/60 transition-all duration-200 cursor-pointer;
-    font-family: "Ubuntu", sans-serif;
-  }
-  .admin-link:hover  { @apply bg-primary/10 text-white/90; }
-  .admin-link.active { @apply bg-primary/15 text-primary; }
+  .neo-pill.active .neo-count { @apply bg-neon-cyan/20 text-neon-cyan; }
 }
 
 @layer utilities {
-  .font-ubuntu { font-family: "Ubuntu", sans-serif; }
-  .font-mono   { font-family: "Ubuntu Mono", monospace; }
+  .text-glow { text-shadow: 0 0 20px rgba(79, 172, 254, 0.5); }
 }
 
-/* ── Animations ── */
-@keyframes pulse-anim {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(88,199,243,0.6); }
-  50%       { box-shadow: 0 0 0 8px rgba(88,199,243,0); }
+/* ── Custom Animations ── */
+@keyframes text-shine {
+  to { background-position: 200% center; }
 }
 
-@keyframes fade-up   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
-@keyframes fade-down { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:none; } }
-@keyframes fade-in   { from { opacity:0; } to { opacity:1; } }
-@keyframes slide-in-right { from { transform:translateX(100%); } to { transform:none; } }
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-.anim-fade-up   { animation: fade-up   .6s ease both; }
-.anim-fade-down { animation: fade-down .5s ease both; }
+.anim-fade-up {
+  animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
-/* Hero stagger delays */
-.hero-1 { animation: fade-down .5s  .1s  ease both; }
-.hero-2 { animation: fade-up  .6s  .22s ease both; }
-.hero-3 { animation: fade-up  .6s  .36s ease both; }
-.hero-4 { animation: fade-up  .6s  .5s  ease both; }
-.hero-5 { animation: fade-up  .6s  .62s ease both; }
-.hero-6 { animation: fade-up  .6s  .74s ease both; }
+/* DaisyUI overrides */
+.btn { @apply font-sans font-semibold normal-case rounded-xl tracking-wide; }
+.btn-primary { @apply bg-gradient-to-r from-neon-cyan to-neon-violet border-none text-deep-space hover:opacity-90; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3); }
 
-/* Title rotation fade */
-.title-visible { opacity:1; transform:none; transition: opacity .35s, transform .35s; }
-.title-hidden  { opacity:0; transform:translateY(10px); transition: opacity .35s, transform .35s; }
+/* ── Blog prose (Modernized) ── */
+.blog-prose {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: "Inter", sans-serif;
+  font-size: 17px;
+  line-height: 1.8;
+}
+.blog-prose h1, .blog-prose h2, .blog-prose h3 {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+.blog-prose h1 { font-size: clamp(28px, 4vw, 40px); }
+.blog-prose h2 { font-size: clamp(22px, 3vw, 32px); }
+.blog-prose h3 { font-size: 20px; color: #4facfe; }
 
-/* DaisyUI font overrides */
-.btn      { font-family: "Ubuntu", sans-serif !important; font-weight: 700 !important; }
-.input    { font-family: "Ubuntu", sans-serif !important; }
-.textarea { font-family: "Ubuntu", sans-serif !important; }
-.badge    { font-family: "Ubuntu Mono", monospace !important; }
-  /* ── Blog prose (Markdown rendu) ── */
-  .blog-prose {
-    color: rgba(255,255,255,0.72);
-    font-family: "Ubuntu", sans-serif;
-    font-size: 16px;
-    line-height: 1.85;
-  }
-  .blog-prose h1,
-  .blog-prose h2,
-  .blog-prose h3,
-  .blog-prose h4 {
-    font-family: "Ubuntu", sans-serif;
-    font-weight: 700;
-    color: rgba(255,255,255,0.92);
-    margin-top: 2.2rem;
-    margin-bottom: 0.9rem;
-    line-height: 1.3;
-  }
-  .blog-prose h1 { font-size: clamp(22px,3vw,32px); }
-  .blog-prose h2 { font-size: clamp(18px,2.5vw,26px); }
-  .blog-prose h3 { font-size: 18px; }
-  .blog-prose h2 { border-bottom: 1px solid rgba(231,121,193,0.15); padding-bottom: 0.5rem; }
+.blog-prose a { color: #00f2fe; text-decoration: underline; text-underline-offset: 4px; }
+.blog-prose a:hover { color: #fff; }
 
-  .blog-prose p   { margin-bottom: 1.25rem; }
-  .blog-prose a   { color: #e779c1; text-decoration: underline; text-underline-offset: 3px; }
-  .blog-prose a:hover { color: #f0a0d5; }
-
-  .blog-prose strong { color: rgba(255,255,255,0.92); font-weight: 700; }
-  .blog-prose em     { color: rgba(255,255,255,0.75); font-style: italic; }
-
-  .blog-prose ul,
-  .blog-prose ol {
-    padding-left: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-  .blog-prose li { margin-bottom: 0.4rem; }
-  .blog-prose ul li::marker { color: #e779c1; }
-  .blog-prose ol li::marker { color: #e779c1; font-family: "Ubuntu Mono", monospace; }
-
-  .blog-prose blockquote {
-    border-left: 3px solid #e779c1;
-    padding: 0.75rem 1.25rem;
-    margin: 1.5rem 0;
-    background: rgba(231,121,193,0.06);
-    border-radius: 0 8px 8px 0;
-    color: rgba(255,255,255,0.55);
-    font-style: italic;
-  }
-
-  .blog-prose code {
-    font-family: "Ubuntu Mono", "Fira Code", monospace;
-    font-size: 0.88em;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 5px;
-    padding: 0.15em 0.45em;
-    color: #58c7f3;
-  }
-  .blog-prose pre {
-    background: #0d0820;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-  }
-  .blog-prose pre code {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 0.9em;
-    color: rgba(255,255,255,0.82);
-  }
-
-  .blog-prose table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1.5rem 0;
-    font-size: 14px;
-  }
-  .blog-prose th {
-    background: rgba(231,121,193,0.1);
-    color: #e779c1;
-    font-weight: 700;
-    text-align: left;
-    padding: 0.65rem 1rem;
-    border: 1px solid rgba(255,255,255,0.08);
-    font-family: "Ubuntu Mono", monospace;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .blog-prose td {
-    padding: 0.6rem 1rem;
-    border: 1px solid rgba(255,255,255,0.06);
-  }
-  .blog-prose tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
-
-  .blog-prose hr {
-    border: none;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    margin: 2rem 0;
-  }
-  .blog-prose img {
-    max-width: 100%;
-    border-radius: 12px;
-    margin: 1.5rem 0;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
+.blog-prose code {
+  font-family: "Fira Code", monospace;
+  font-size: 0.9em;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  color: #ec4899;
+}
+.blog-prose pre {
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  overflow-x: auto;
+  margin: 2rem 0;
+}
+.blog-prose img {
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+}

@@ -1,55 +1,86 @@
 import Reveal from "../components/Reveal";
 import Image from "../assets/profil.jpeg";
+import { User, Target, Coffee } from "lucide-react";
 
 export default function AboutSection() {
   return (
-    <section id="about" className="section-pad">
-      <div className="container-md">
+    <section id="about" className="section-pad relative">
+      <div className="absolute top-1/2 left-0 w-[40vw] h-[40vw] bg-neon-cyan/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
+      
+      <div className="container-md relative z-10">
         <Reveal>
-          <span className="label-mono">About me</span>
-          <h2 className="section-title">À propos</h2>
+          <span className="label-mono flex items-center gap-2">
+            <User size={16} /> Insight
+          </span>
+          <h2 className="section-title">
+            À <span className="gradient-text">propos</span>
+          </h2>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-14 items-start">
-          {/* Avatar */}
+        <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-16 items-center">
+          {/* ── Avatar Frame ── */}
           <Reveal dir="left">
-            <div
-              className="w-[200px] h-[200px] rounded-[20px] flex items-center justify-center relative overflow-hidden shrink-0 border border-primary/20"
-              style={{ background: "rgba(231,121,193,0.05)" }}
-            >
-              <div style={{ position:"absolute", inset:0, background:"radial-gradient(circle at 30% 30%, rgba(231,121,193,0.1), transparent 65%)" }} />
-              <span className="font-ubuntu font-bold text-[68px] text-primary/20 select-none relative z-10"> <img src={Image} alt="photo de profil jonathan" /></span>
-              {/* Corner brackets */}
-              <div style={{ position:"absolute", top:14, left:14, width:28, height:28, borderTop:"2px solid #e779c1", borderLeft:"2px solid #e779c1", borderRadius:"4px 0 0 0" }} />
-              <div style={{ position:"absolute", bottom:14, right:14, width:28, height:28, borderBottom:"2px solid #58c7f3", borderRight:"2px solid #58c7f3", borderRadius:"0 0 4px 0" }} />
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gradient-to-tr from-neon-cyan to-neon-violet opacity-20 blur-2xl group-hover:opacity-40 transition-opacity duration-700 rounded-full" />
+              
+              <div className="relative w-full aspect-square md:w-[350px] md:h-[350px] mx-auto rounded-3xl overflow-hidden glass-panel p-2">
+                <div className="w-full h-full rounded-2xl overflow-hidden relative">
+                   <div className="absolute inset-0 bg-blend-overlay bg-deep-space/20 z-10 mix-blend-color" />
+                   <img 
+                     src={Image} 
+                     alt="Jonathan Dev" 
+                     className="object-cover w-full h-full scale-100 group-hover:scale-105 transition-transform duration-700"
+                   />
+                </div>
+              </div>
+
+              {/* Floating Element */}
+              <div className="absolute -right-6 -bottom-6 glass-panel px-6 py-4 rounded-2xl flex items-center gap-4 animate-float shadow-2xl">
+                 <div className="w-12 h-12 rounded-full bg-neon-cyan/20 flex items-center justify-center text-neon-cyan">
+                   <Coffee size={24} />
+                 </div>
+                 <div>
+                   <div className="font-display font-bold text-2xl text-white">100+</div>
+                   <div className="font-mono text-[10px] text-white/50 tracking-widest uppercase">Cafés bus</div>
+                 </div>
+              </div>
             </div>
           </Reveal>
 
-          {/* Bio */}
+          {/* ── Bio Text ── */}
           <Reveal delay={100}>
-            <p className="font-ubuntu text-base text-base-content/70 leading-[1.85] mb-3.5">
-              Je suis développeur web fullstack passionné par la création d'applications utiles.
-            </p>
-            <p className="font-ubuntu font-light text-[15px] text-base-content/50 leading-[1.85] mb-3.5">
-              J'aime construire des <span className="font-medium text-secondary">API robustes</span> et des{" "}
-              <span className="font-medium text-primary">interfaces modernes</span> qui résolvent de vrais problèmes.
-            </p>
-            <p className="font-ubuntu font-light text-[15px] text-base-content/50 leading-[1.85] mb-10">
-              Mon objectif est de rejoindre une équipe où je peux contribuer à des produits réels et continuer à progresser techniquement.
-            </p>
+            <div className="flex flex-col gap-6">
+              <p className="font-sans text-[18px] md:text-[20px] text-white/90 leading-[1.8] font-light">
+                Je suis un développeur fullstack passionné par la création d'expériences numériques immersives et performantes.
+              </p>
+              <p className="font-sans text-[16px] text-white/60 leading-[1.8]">
+                Mon expertise s'articule autour des écosystèmes <span className="text-neon-cyan font-medium">React</span> et <span className="text-neon-pink font-medium">Node.js</span>. J'aime concevoir des architectures frontend élégantes couplées à des backends robustes capables de soutenir des applications SaaS ambitieuses.
+              </p>
+              
+              <div className="glass-divider my-4" />
 
-            {/* Stats */}
-            <div className="flex flex-wrap gap-4">
-              {[
-                { label:"Expérience",     value:"2+ ans",       color:"text-primary" },
-                { label:"Projets livrés", value:"10+",          color:"text-secondary" },
-                { label:"Localisation",   value:"Yaoundé",  color:"text-accent" },
-              ].map(s => (
-                <div key={s.label} className="px-4 py-3 rounded-xl border border-white/7 bg-white/[0.025]">
-                  <div className={`font-ubuntu font-bold text-[22px] leading-none ${s.color}`}>{s.value}</div>
-                  <div className="font-mono text-[11px] text-white/30 mt-1.5 tracking-[0.8px]">{s.label}</div>
-                </div>
-              ))}
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  { label: "Expérience", value: "2+ ans", icon: <Target size={16} />, color: "text-neon-cyan" },
+                  { label: "Projets livrés", value: "10+", icon: <Coffee size={16} />, color: "text-neon-violet" },
+                  { label: "Localisation", value: "Yaoundé", icon: <User size={16} />, color: "text-neon-pink" },
+                ].map((s) => (
+                  <div key={s.label} className="glass-panel p-5 group cursor-default">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className={`p-2 rounded-lg bg-white/5 ${s.color}`}>
+                        {s.icon}
+                      </div>
+                    </div>
+                    <div className="font-display font-bold text-[28px] text-white leading-none mb-1 group-hover:scale-105 transition-transform origin-left">
+                      {s.value}
+                    </div>
+                    <div className="font-mono text-[11px] text-white/40 tracking-wider uppercase">
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </Reveal>
         </div>
