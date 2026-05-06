@@ -67,11 +67,11 @@ export default function HeroSection() {
         </motion.div>
 
         {/* Dynamic Titles */}
-        <motion.div variants={itemVariants} className="mb-6 h-[80px] md:h-[120px] flex flex-col justify-center">
-          <h1 className="font-display font-black leading-[1.1] tracking-tight" style={{ fontSize: "clamp(40px, 7vw, 84px)" }}>
+        <motion.div variants={itemVariants} className="mb-6 min-h-[120px] md:min-h-[140px] flex flex-col justify-center">
+          <h1 className="font-display font-black leading-[1.1] tracking-tight" style={{ fontSize: "clamp(32px, 8vw, 84px)" }}>
             <span className="text-white">I am a </span>
             <br className="md:hidden" />
-            <div className="inline-block relative h-[1.2em] w-full md:w-auto align-bottom overflow-hidden">
+            <div className="inline-block relative h-[1.2em] w-full md:w-auto align-bottom">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={idx}
@@ -79,7 +79,7 @@ export default function HeroSection() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -40, opacity: 0 }}
                   transition={{ duration: 0.5, ease: "anticipate" }}
-                  className="absolute left-0 gradient-text whitespace-nowrap"
+                  className="absolute left-0 gradient-text w-full max-w-full"
                 >
                   {TITLES[idx]}
                 </motion.span>

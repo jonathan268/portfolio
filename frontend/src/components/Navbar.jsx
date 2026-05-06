@@ -55,8 +55,8 @@ export default function Navbar() {
   return (
     <>
       <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
+        initial={{ y: -100, x: "-50%" }}
+        animate={{ y: 0, x: "-50%" }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           scrolled ? "top-4 w-[95%] md:w-[800px]" : "top-6 w-[95%] md:w-[900px]"

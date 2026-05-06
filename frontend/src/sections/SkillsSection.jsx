@@ -20,108 +20,106 @@ export default function SkillsSection() {
       .catch(() => {});
   }, []);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-    },
-  };
+  // Flatten the skills to create a continuous list of technologies
+  const allTechs = skills.flatMap((cat) => 
+    (cat.items || []).map((item) => ({
+      name: item,
+      color: COLOR_MAP[cat.color] || "#00b4d8",
+      catName: cat.cat
+    }))
+  );
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } },
-  };
+  // Fallback skeletons if not loaded
+  const isLoading = skills.length === 0;
 
   return (
-    <section id="skills" className="section-pad relative overflow-hidden">
+    <section id="skills" className="py-24 relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute top-1/2 right-0 w-[50vw] h-[50vw] bg-brand-700/5 rounded-full blur-[150px] pointer-events-none -translate-y-1/2" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[20vw] bg-brand-600/5 rounded-full blur-[100px] pointer-events-none" />
       
-      <div className="container-md relative z-10">
+      <div className="container-md px-[6vw] relative z-10 mb-16">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="label-mono flex items-center gap-2">
+          <span className="label-mono flex items-center gap-2 justify-center md:justify-start">
             <Cpu size={16} /> Compétences
           </span>
-          <h2 className="section-title">
+          <h2 className="section-title text-center md:text-left">
             <span className="gradient-text">Technologies</span> & Stack
           </h2>
         </motion.div>
+      </div>
 
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          {skills.map((cat, i) => (
-            <motion.div 
-              key={cat._id} 
-              variants={itemVariants}
-              className="h-full p-8 glass-panel group transition-transform duration-300"
-            >
-              <div className="flex items-center gap-4 mb-8">
-                <div 
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 border border-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] transition-colors"
-                  style={{ color: COLOR_MAP[cat.color] || "#00b4d8" }}
-                >
-                   <span className="text-2xl drop-shadow-[0_0_8px_currentColor]">{cat.icon}</span>
+      <div className="relative z-10 w-full overflow-hidden flex" style={{ maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)", WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)" }}>
+        
+        {isLoading ? (
+           <div className="flex gap-6 px-4 py-8 animate-pulse">
+             {Array.from({ length: 10 }).map((_, i) => (
+               <div key={i} className="w-[180px] h-[72px] rounded-2xl bg-white/5 border border-white/10 shrink-0" />
+             ))}
+           </div>
+        ) : (
+          <motion.div 
+            className="flex w-max"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 40 }}
+          >
+            {/* Render two identical sets of the items to ensure seamless infinite looping */}
+            {[...allTechs, ...allTechs].map((tech, i) => (
+              <div 
+                key={`${tech.name}-${i}`} 
+                className="flex items-center gap-4 px-6 py-4 mx-3 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-brand-500/30 hover:bg-white/5 transition-all group shrink-0"
+              >
+                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/5 border border-white/10 group-hover:scale-110 transition-transform shadow-inner">
+                  <TechIcon
+                    name={tech.name}
+                    size={24}
+                    accentColor={tech.color}
+                  />
                 </div>
-                <h3
-                  className="font-display font-bold text-[18px] tracking-wide"
-                  style={{ color: COLOR_MAP[cat.color] || "#00b4d8" }}
-                >
-                  {cat.cat}
-                </h3>
-              </div>
-              
-              <ul className="flex flex-col gap-4">
-                {cat.items.map((item) => (
-                  <motion.li 
-                    key={item} 
-                    whileHover={{ x: 5 }}
-                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-default"
-                  >
-                    <div className="p-1.5 rounded-md bg-white/5 border border-white/5 shadow-inner">
-                      <TechIcon
-                        name={item}
-                        size={18}
-                        accentColor={COLOR_MAP[cat.color]}
-                      />
-                    </div>
-                    <span className="font-sans text-[15px] font-medium text-white/80 group-hover:text-white transition-colors">
-                      {item}
-                    </span>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-
-          {/* Skeleton loader */}
-          {skills.length === 0 &&
-            Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-full p-8 glass-panel animate-pulse">
-                <div className="flex gap-4 mb-8 items-center">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10" />
-                  <div className="w-1/2 h-6 rounded bg-white/10" />
+                <div>
+                  <div className="font-display font-bold text-[18px] text-white/90 group-hover:text-white transition-colors">{tech.name}</div>
+                  <div className="font-mono text-[10px] uppercase tracking-wider" style={{ color: tech.color }}>{tech.catName}</div>
                 </div>
-                {Array.from({ length: 4 }).map((_, j) => (
-                  <div key={j} className="flex gap-3 mb-4 items-center">
-                    <div className="w-8 h-8 rounded bg-white/5" />
-                    <div className="w-3/4 h-4 rounded bg-white/5" />
-                  </div>
-                ))}
               </div>
             ))}
-        </motion.div>
+          </motion.div>
+        )}
       </div>
+
+      {/* Second row scrolling in the opposite direction for visual dynamism */}
+      {!isLoading && allTechs.length > 5 && (
+        <div className="relative z-10 w-full overflow-hidden flex mt-6" style={{ maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)", WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)" }}>
+          <motion.div 
+            className="flex w-max"
+            animate={{ x: ["-50%", "0%"] }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 50 }}
+          >
+            {/* Reverse the array for the second row */}
+            {[...allTechs].reverse().concat([...allTechs].reverse()).map((tech, i) => (
+              <div 
+                key={`rev-${tech.name}-${i}`} 
+                className="flex items-center gap-4 px-6 py-4 mx-3 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-brand-500/30 hover:bg-white/5 transition-all group shrink-0"
+              >
+                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/5 border border-white/10 group-hover:scale-110 transition-transform shadow-inner">
+                  <TechIcon
+                    name={tech.name}
+                    size={24}
+                    accentColor={tech.color}
+                  />
+                </div>
+                <div>
+                  <div className="font-display font-bold text-[18px] text-white/90 group-hover:text-white transition-colors">{tech.name}</div>
+                  <div className="font-mono text-[10px] uppercase tracking-wider" style={{ color: tech.color }}>{tech.catName}</div>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      )}
     </section>
   );
 }
