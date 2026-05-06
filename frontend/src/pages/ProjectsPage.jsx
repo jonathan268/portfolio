@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Sparkles, ArrowUpRight, Github, Code2 } from "lucide-react";
+import { Sparkles, ArrowUpRight, Github, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import api from "../api";
 
 const FILTERS = [
@@ -10,12 +11,15 @@ const FILTERS = [
   { key: "api", label: "API" },
 ];
 
-export default function ProjectsSection() {
+export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Scroll to top when page loads
+    window.scrollTo(0, 0);
     api.get("/projects")
       .then((r) => setProjects(r.data.data))
       .catch(() => {})
@@ -26,40 +30,55 @@ export default function ProjectsSection() {
   const count = (k) => (k === "all" ? projects.length : projects.filter((p) => p.type === k).length);
 
   return (
-    <section id="projects" className="section-pad">
-      <div className="container-md">
+    <div className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-deep-space">
+      {/* Background Orbs */}
+      <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-brand-700/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[40%] left-[-10%] w-[40vw] h-[40vw] bg-brand-400/10 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="container-md relative z-10 px-[6vw]">
+        
+        {/* Navigation & Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16"
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-16"
         >
-          <div>
-            <span className="label-mono flex items-center gap-2 text-brand-500">
-              <Code2 size={16} /> Portfolio
-            </span>
-            <h2 className="section-title">
-              Featured <span className="gradient-text">Work</span>
-            </h2>
-          </div>
+          <button 
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 text-white/50 hover:text-white transition-colors font-mono text-[13px] mb-8"
+          >
+            <ArrowLeft size={16} /> Retour à l'accueil
+          </button>
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div>
+              <h1 className="font-display font-black text-[40px] md:text-[56px] text-white leading-tight tracking-tight mb-4">
+                Tous mes <span className="gradient-text">Projets</span>
+              </h1>
+              <p className="font-sans text-[16px] text-white/60 max-w-xl leading-relaxed">
+                Explorez l'ensemble de mes réalisations, des applications web interactives aux architectures d'API robustes.
+              </p>
+            </div>
 
-          <div className="flex flex-wrap gap-3">
-            {FILTERS.map((f) => (
-              <button
-                key={f.key}
-                className={`neo-pill ${filter === f.key ? "active" : ""}`}
-                onClick={() => setFilter(f.key)}
-              >
-                {f.label}
-                <span className="neo-count">{count(f.key)}</span>
-              </button>
-            ))}
+            <div className="flex flex-wrap gap-3">
+              {FILTERS.map((f) => (
+                <button
+                  key={f.key}
+                  className={`neo-pill ${filter === f.key ? "active" : ""}`}
+                  onClick={() => setFilter(f.key)}
+                >
+                  {f.label}
+                  <span className="neo-count">{count(f.key)}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </motion.div>
 
+        {/* Projects Grid */}
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
           <AnimatePresence mode="popLayout">
-            {loading && Array.from({ length: 4 }).map((_, i) => (
+            {loading && Array.from({ length: 6 }).map((_, i) => (
               <motion.div 
                 key={`skeleton-${i}`} 
                 initial={{ opacity: 0 }}
@@ -76,7 +95,7 @@ export default function ProjectsSection() {
               </motion.div>
             ))}
 
-            {!loading && filtered.slice(0, 6).map((p, i) => (
+            {!loading && filtered.map((p) => (
               <motion.div 
                 key={p._id}
                 layout
@@ -170,27 +189,7 @@ export default function ProjectsSection() {
             <p className="font-mono text-[14px] text-white/40">Aucun projet trouvé dans cette catégorie.</p>
           </motion.div>
         )}
-
-        {/* CTA to all projects */}
-        {!loading && projects.length > 0 && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-16 flex justify-center"
-          >
-            <a 
-              href="/projects" 
-              className="relative group px-8 py-4 rounded-xl font-sans font-semibold text-[15px] overflow-hidden bg-white/5 border border-white/10 hover:border-transparent transition-all"
-            >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-brand-600 to-brand-800" />
-              <span className="relative flex items-center gap-2 text-white z-10 group-hover:text-white transition-colors duration-300">
-                <Sparkles size={18} /> Voir tous les projets
-              </span>
-            </a>
-          </motion.div>
-        )}
       </div>
-    </section>
+    </div>
   );
 }

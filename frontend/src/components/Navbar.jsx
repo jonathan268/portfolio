@@ -52,6 +52,8 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, [location.pathname]);
 
+  if (location.pathname.startsWith("/admin")) return null;
+
   return (
     <>
       <motion.div

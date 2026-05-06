@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
 import Home from "./pages/Home";
+import ProjectsPage from "./pages/ProjectsPage";
 import BlogPostPage from "./pages/BlogPost";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -21,6 +22,7 @@ export default function App() {
       <Routes>
         {/* ── Public ── */}
         <Route path="/" element={<Home />} />
+        <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
 
         {/* ── Admin login ── */}
