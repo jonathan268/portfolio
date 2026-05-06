@@ -34,12 +34,15 @@
 
   /* Specially for clickable cards like projects/blog */
   .bento-card {
-    @apply glass-panel group cursor-pointer flex flex-col h-full;
+    @apply glass-panel cursor-pointer flex flex-col h-full;
   }
   .bento-card::before {
     content: '';
-    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none;
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none;
     background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
+  }
+  .bento-card:hover::before {
+    @apply opacity-100;
   }
 
   /* ── Typography ── */
