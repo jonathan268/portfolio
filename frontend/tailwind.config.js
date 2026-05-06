@@ -9,10 +9,18 @@ export default {
         mono: ["Fira Code", "monospace"],
       },
       colors: {
-        "deep-space": "#050505",
-        "neon-cyan": "#00f2fe",
-        "neon-violet": "#4facfe",
-        "neon-pink": "#ec4899",
+        "deep-space": "#010214",
+        "brand": {
+          100: "#caf0f8",
+          200: "#ade8f4",
+          300: "#90e0ef",
+          400: "#48cae4",
+          500: "#00b4d8",
+          600: "#0096c7",
+          700: "#0077b6",
+          800: "#023e8a",
+          900: "#03045e",
+        },
       },
       animation: {
         "blob": "blob 7s infinite",
@@ -43,12 +51,12 @@ export default {
     themes: [
       {
         portfolio: {
-          "primary": "#4facfe",
-          "secondary": "#ec4899",
-          "accent": "#00f2fe",
-          "neutral": "#111116",
-          "base-100": "#050505",
-          "info": "#37cdf8",
+          "primary": "#00b4d8",
+          "secondary": "#0077b6",
+          "accent": "#48cae4",
+          "neutral": "#03045e",
+          "base-100": "#010214",
+          "info": "#90e0ef",
           "success": "#36d399",
           "warning": "#fbbd23",
           "error": "#f87272",

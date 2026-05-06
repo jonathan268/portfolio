@@ -1,6 +1,7 @@
 import { Terminal } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const NAV = [
   { id: "hero",     label: "Accueil" },
@@ -22,15 +23,22 @@ export default function Navbar() {
   const [menuOpen, setMenu]   = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location              = useLocation();
-
-  if (location.pathname !== "/") return null;
+  const navigate              = useNavigate();
 
   const go = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    }
     setMenu(false);
   };
 
   useEffect(() => {
+    if (location.pathname !== "/") return;
     const IDS = NAV.map(n => n.id);
     const fn = () => {
       const y = window.scrollY + 130;
@@ -42,11 +50,14 @@ export default function Navbar() {
     };
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
-  }, []);
+  }, [location.pathname]);
 
   return (
     <>
-      <div
+      <motion.div
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           scrolled ? "top-4 w-[95%] md:w-[800px]" : "top-6 w-[95%] md:w-[900px]"
         }`}
@@ -54,11 +65,11 @@ export default function Navbar() {
         <div className="flex items-center justify-between px-4 py-3 border rounded-full bg-white/5 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
           {/* Logo */}
           <button onClick={() => go("hero")} className="flex items-center gap-2.5 transition-transform hover:scale-105">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-neon-cyan to-neon-violet text-deep-space">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 text-deep-space">
               <Terminal size={18} strokeWidth={2.5} />
             </div>
             <span className="text-[18px] font-display font-bold tracking-tight text-white">
-              Jonathan<span className="text-neon-cyan">.</span>
+              Jonathan<span className="text-brand-400">.</span>
             </span>
           </button>
 
@@ -68,11 +79,16 @@ export default function Navbar() {
               <button
                 key={id}
                 onClick={() => go(id)}
-                className="relative px-4 py-1.5 font-sans font-medium text-[14px] rounded-full transition-all duration-300"
-                style={{ color: active === id ? "#fff" : "rgba(255,255,255,0.5)" }}
+                className="relative px-4 py-1.5 font-sans font-medium text-[14px] rounded-full transition-all duration-300 outline-none"
+                style={{ color: active === id ? "#fff" : "rgba(255,255,255,0.6)" }}
               >
                 {active === id && (
-                  <span className="absolute inset-0 z-0 rounded-full bg-white/10" style={{ backdropFilter: "blur(4px)" }} />
+                  <motion.span 
+                    layoutId="nav-active"
+                    className="absolute inset-0 z-0 rounded-full bg-white/10" 
+                    style={{ backdropFilter: "blur(8px)" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
                 )}
                 <span className="relative z-10">{label}</span>
               </button>
@@ -85,12 +101,12 @@ export default function Navbar() {
               href="https://github.com/jonathan268"
               target="_blank"
               rel="noreferrer"
-              className="hidden md:flex items-center gap-2 px-4 py-2 font-mono text-[13px] font-medium text-white/70 transition-all rounded-full hover:bg-white/10 hover:text-white border border-white/10"
+              className="hidden md:flex items-center gap-2 px-4 py-2 font-mono text-[13px] font-medium text-white/70 transition-all rounded-full hover:bg-white/10 hover:text-white border border-white/10 hover:border-white/20"
             >
               <IconGithub /> GitHub
             </a>
             <button
-              className="flex items-center justify-center w-10 h-10 border rounded-full md:hidden bg-white/5 border-white/10 text-white/70"
+              className="flex items-center justify-center w-10 h-10 border rounded-full md:hidden bg-white/5 border-white/10 text-white/70 hover:bg-white/10 transition-colors"
               onClick={() => setMenu(o => !o)}
             >
               {menuOpen
@@ -100,25 +116,35 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Mobile menu focus */}
-      <div
-        className={`fixed inset-0 z-40 bg-deep-space/80 backdrop-blur-xl transition-opacity duration-300 md:hidden ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-        onClick={() => setMenu(false)}
-      >
-        <div className="flex flex-col items-center justify-center h-full gap-6">
-          {NAV.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={(e) => { e.stopPropagation(); go(id); }}
-              className={`font-display text-4xl font-bold tracking-tight transition-all duration-300 ${active === id ? "gradient-text scale-110" : "text-white/40 hover:text-white"}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            className="fixed inset-0 z-40 bg-deep-space/90 flex flex-col items-center justify-center"
+            onClick={() => setMenu(false)}
+          >
+            <div className="flex flex-col items-center justify-center h-full gap-8">
+              {NAV.map(({ id, label }, i) => (
+                <motion.button
+                  key={id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  onClick={(e) => { e.stopPropagation(); go(id); }}
+                  className={`font-display text-4xl font-bold tracking-tight transition-all duration-300 ${active === id ? "gradient-text scale-110" : "text-white/40 hover:text-white"}`}
+                >
+                  {label}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

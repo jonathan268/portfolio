@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Edit2, Trash2, Image as ImageIcon, CheckCircle, Circle, X } from "lucide-react";
 import api from "../../api";
 
 const EMPTY = {
@@ -37,7 +39,7 @@ function ImageUploader({ value, onChange }) {
 
   return (
     <div>
-      <label className="font-mono text-[11px] text-primary tracking-[1px] uppercase block mb-2">
+      <label className="font-mono text-[11px] text-brand-400 tracking-[1px] uppercase block mb-2">
         Image d'aperçu
       </label>
 
@@ -46,43 +48,33 @@ function ImageUploader({ value, onChange }) {
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
-        className="relative w-full overflow-hidden transition-all border cursor-pointer rounded-xl"
+        className="relative w-full overflow-hidden transition-all border cursor-pointer rounded-xl bg-white/5 hover:bg-white/10"
         style={{
           height: value ? 180 : 120,
-          borderColor: dragOver ? "#e779c1" : "rgba(255,255,255,0.1)",
-          background: dragOver ? "rgba(231,121,193,0.07)" : "rgba(255,255,255,0.03)",
+          borderColor: dragOver ? "#00b4d8" : "rgba(255,255,255,0.1)",
         }}
       >
         {value && !uploading && (
           <>
             <img src={value} alt="Aperçu" className="object-cover w-full h-full" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 transition-opacity opacity-0 hover:opacity-100"
-              style={{ background:"rgba(12,6,30,0.75)" }}>
-              <svg width="22" height="22" fill="none" stroke="#e779c1" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 transition-opacity opacity-0 hover:opacity-100 bg-[#010214]/80">
+              <ImageIcon size={24} className="text-brand-400" />
               <span className="font-mono text-[11px] text-white/70">Changer l'image</span>
             </div>
           </>
         )}
 
         {uploading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-            style={{ background:"rgba(12,6,30,0.85)" }}>
-            <span className="loading loading-spinner loading-md text-primary" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#010214]/80">
+            <span className="w-6 h-6 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin" />
             <span className="font-mono text-[11px] text-white/50">Upload en cours…</span>
           </div>
         )}
 
         {!value && !uploading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-            <svg width="24" height="24" fill="none" stroke={dragOver ? "#e779c1" : "rgba(255,255,255,0.25)"} strokeWidth="1.5" viewBox="0 0 24 24">
-              <rect x="3" y="3" width="18" height="18" rx="3"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <polyline points="21 15 16 10 5 21"/>
-            </svg>
-            <span className="font-mono text-[11px]" style={{ color: dragOver ? "#e779c1" : "rgba(255,255,255,0.3)" }}>
+            <ImageIcon size={24} className={dragOver ? "text-brand-400" : "text-white/20"} />
+            <span className="font-mono text-[11px]" style={{ color: dragOver ? "#00b4d8" : "rgba(255,255,255,0.3)" }}>
               {dragOver ? "Déposer l'image ici" : "Cliquer ou déposer une image"}
             </span>
             <span className="font-mono text-[10px] text-white/20">JPG, PNG, WebP — max 5 Mo</span>
@@ -92,13 +84,9 @@ function ImageUploader({ value, onChange }) {
 
       {value && !uploading && (
         <button type="button"
-          onClick={() => onChange("")}
-          className="mt-2 font-mono text-[11px] text-error/60 hover:text-error flex items-center gap-1 transition-colors">
-          <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-          </svg>
-          Supprimer l'image
+          onClick={(e) => { e.stopPropagation(); onChange(""); }}
+          className="mt-2 font-mono text-[11px] text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors">
+          <Trash2 size={12} /> Supprimer l'image
         </button>
       )}
 
@@ -145,25 +133,29 @@ function Modal({ project, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ background:"rgba(0,0,0,0.7)", backdropFilter:"blur(6px)" }}>
-      <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto sw-card p-8" style={{ background:"#120a2e" }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-[#010214]/80 backdrop-blur-sm">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#03045e]/20 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-2xl"
+      >
 
-        <div className="flex items-center justify-between mb-7">
-          <h2 className="font-ubuntu font-bold text-[20px]">{project ? "Modifier le projet" : "Nouveau projet"}</h2>
-          <button className="text-lg btn btn-sm btn-ghost btn-square" onClick={onClose}>✕</button>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="font-display font-bold text-[24px] text-white">{project ? "Modifier le projet" : "Nouveau projet"}</h2>
+          <button className="text-white/50 hover:text-white transition-colors" onClick={onClose}><X size={24} /></button>
         </div>
 
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-5">
+          <div className="grid grid-cols-2 gap-5">
             <Field label="Nom" value={form.name} onChange={v => set("name", v)} placeholder="StockWise" />
             <div>
-              <label className="font-mono text-[11px] text-primary tracking-[1px] uppercase block mb-2">Type</label>
-              <select className="select select-bordered select-primary w-full bg-white/5 text-[14px]"
-                value={form.type} onChange={e => set("type", e.target.value)} style={{ fontFamily:"Ubuntu, sans-serif" }}>
-                <option value="saas">SaaS</option>
-                <option value="web">Web App</option>
-                <option value="api">API</option>
+              <label className="font-mono text-[11px] text-brand-400 tracking-[1px] uppercase block mb-2">Type</label>
+              <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-500/50 transition-colors"
+                value={form.type} onChange={e => set("type", e.target.value)}>
+                <option value="saas" className="bg-[#010214]">SaaS</option>
+                <option value="web" className="bg-[#010214]">Web App</option>
+                <option value="api" className="bg-[#010214]">API</option>
               </select>
             </div>
           </div>
@@ -175,35 +167,39 @@ function Modal({ project, onClose, onSave }) {
 
           <ImageUploader value={form.imageUrl} onChange={v => set("imageUrl", v)} />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <Field label="URL Live" value={form.live} onChange={v => set("live", v)} placeholder="https://..." />
             <Field label="URL GitHub" value={form.github} onChange={v => set("github", v)} placeholder="https://github.com/..." />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <Field label="Ordre d'affichage" value={form.order} type="number" onChange={v => set("order", v)} placeholder="1" />
           </div>
 
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2.5 cursor-pointer">
-              <input type="checkbox" className="checkbox checkbox-primary checkbox-sm"
-                checked={form.featured} onChange={e => set("featured", e.target.checked)} />
-              <span className="font-ubuntu text-[14px] text-base-content/70">Featured</span>
+          <div className="flex gap-6 pt-2">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <div className={`flex items-center justify-center w-5 h-5 rounded border ${form.featured ? 'bg-brand-500 border-brand-500' : 'border-white/20 group-hover:border-white/50'}`}>
+                {form.featured && <CheckCircle size={14} className="text-white" />}
+              </div>
+              <input type="checkbox" className="hidden" checked={form.featured} onChange={e => set("featured", e.target.checked)} />
+              <span className="font-sans font-medium text-[14px] text-white/80 group-hover:text-white">Featured</span>
             </label>
-            <label className="flex items-center gap-2.5 cursor-pointer">
-              <input type="checkbox" className="checkbox checkbox-primary checkbox-sm"
-                checked={form.published} onChange={e => set("published", e.target.checked)} />
-              <span className="font-ubuntu text-[14px] text-base-content/70">Publié</span>
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <div className={`flex items-center justify-center w-5 h-5 rounded border ${form.published ? 'bg-brand-500 border-brand-500' : 'border-white/20 group-hover:border-white/50'}`}>
+                {form.published && <CheckCircle size={14} className="text-white" />}
+              </div>
+              <input type="checkbox" className="hidden" checked={form.published} onChange={e => set("published", e.target.checked)} />
+              <span className="font-sans font-medium text-[14px] text-white/80 group-hover:text-white">Publié</span>
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 mt-2">
-            <button className="btn btn-ghost btn-sm rounded-[9px]" onClick={onClose}>Annuler</button>
-            <button className="btn btn-primary btn-sm rounded-[9px]" onClick={save} disabled={loading}>
-              {loading ? <span className="loading loading-spinner loading-sm" /> : "Sauvegarder"}
+          <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-white/10">
+            <button className="px-6 py-2.5 rounded-xl font-medium text-white/70 hover:bg-white/5 transition-colors" onClick={onClose}>Annuler</button>
+            <button className="px-6 py-2.5 rounded-xl font-medium bg-brand-500 text-white hover:bg-brand-400 transition-colors flex items-center justify-center min-w-[120px]" onClick={save} disabled={loading}>
+              {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Sauvegarder"}
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -212,8 +208,8 @@ function Modal({ project, onClose, onSave }) {
 function Field({ label, value, onChange, placeholder, type="text" }) {
   return (
     <div>
-      {label && <label className="font-mono text-[11px] text-primary tracking-[1px] uppercase block mb-2">{label}</label>}
-      <input type={type} className="sw-input" placeholder={placeholder} value={value}
+      {label && <label className="font-mono text-[11px] text-brand-400 tracking-[1px] uppercase block mb-2">{label}</label>}
+      <input type={type} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-500/50 transition-colors" placeholder={placeholder} value={value}
         onChange={e => onChange(e.target.value)} />
     </div>
   );
@@ -221,8 +217,8 @@ function Field({ label, value, onChange, placeholder, type="text" }) {
 function Textarea({ label, value, onChange, rows=3, placeholder }) {
   return (
     <div>
-      <label className="font-mono text-[11px] text-primary tracking-[1px] uppercase block mb-2">{label}</label>
-      <textarea className="sw-textarea" rows={rows} placeholder={placeholder} value={value}
+      <label className="font-mono text-[11px] text-brand-400 tracking-[1px] uppercase block mb-2">{label}</label>
+      <textarea className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-500/50 transition-colors resize-none" rows={rows} placeholder={placeholder} value={value}
         onChange={e => onChange(e.target.value)} />
     </div>
   );
@@ -242,68 +238,83 @@ export default function AdminProjects() {
     catch { toast.error("Erreur lors de la suppression."); }
   };
 
-  const TYPE_COLOR = { saas:"#e779c1", web:"#58c7f3", api:"#f3cc30" };
+  const TYPE_COLOR = { saas:"#00b4d8", web:"#48cae4", api:"#0096c7" };
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <p className="font-mono text-[11px] text-primary tracking-[3px] uppercase mb-1">Admin</p>
-          <h1 className="font-ubuntu font-bold text-[26px]">Projets</h1>
-        </div>
-        <button className="btn btn-primary btn-sm rounded-[9px] gap-2" onClick={() => setModal("new")}>
-          + Nouveau projet
-        </button>
+    <div className="max-w-5xl">
+      <div className="flex items-end justify-between mb-10">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+          <p className="font-mono text-[12px] text-brand-400 tracking-[3px] uppercase mb-2">Admin</p>
+          <h1 className="font-display font-bold text-[36px] text-white tracking-tight leading-none">Projets</h1>
+        </motion.div>
+        <motion.button 
+          initial={{ opacity: 0, scale: 0.9 }} 
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 text-white font-medium hover:bg-brand-400 transition-colors shadow-[0_0_15px_rgba(0,180,216,0.2)]" 
+          onClick={() => setModal("new")}
+        >
+          <Plus size={18} /> Nouveau
+        </motion.button>
       </div>
 
-      <div className="flex flex-col gap-3">
-        {projects.map(p => (
-          <div key={p._id} className="flex items-center gap-5 p-5 sw-card">
-            {p.imageUrl ? (
-              <div className="h-10 overflow-hidden border rounded-lg w-14 shrink-0 border-white/10">
-                <img src={p.imageUrl} alt={p.name} className="object-cover w-full h-full" />
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col gap-4"
+      >
+        <AnimatePresence>
+          {projects.map((p, i) => (
+            <motion.div 
+              key={p._id} 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ delay: i * 0.05 }}
+              className="flex items-center gap-5 p-5 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-white/10 transition-colors group"
+            >
+              {p.imageUrl ? (
+                <div className="h-12 w-16 overflow-hidden rounded-lg shrink-0 border border-white/10">
+                  <img src={p.imageUrl} alt={p.name} className="object-cover w-full h-full" />
+                </div>
+              ) : (
+                <div className="w-1.5 h-12 rounded-full shrink-0" style={{ background: TYPE_COLOR[p.type] || "#00b4d8" }} />
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="font-display font-bold text-[18px] text-white">{p.name}</span>
+                  {p.featured && <span className="px-2 py-0.5 rounded-md bg-brand-500/20 text-brand-400 text-[10px] font-mono tracking-wider border border-brand-500/30">FEATURED</span>}
+                  {!p.published && <span className="px-2 py-0.5 rounded-md bg-white/10 text-white/50 text-[10px] font-mono tracking-wider border border-white/10">BROUILLON</span>}
+                </div>
+                <span className="font-sans text-[14px] text-white/50 truncate block">{p.tagline}</span>
               </div>
-            ) : (
-              <div className="w-1.5 h-12 rounded-full shrink-0" style={{ background: TYPE_COLOR[p.type] || "#e779c1" }} />
-            )}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="font-ubuntu font-bold text-[16px] text-base-content/90">{p.name}</span>
-                {p.featured && <span className="badge badge-primary text-[10px]">Featured</span>}
-                {!p.published && <span className="badge badge-ghost text-[10px]">Brouillon</span>}
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="font-mono text-[11px] text-white/40 border border-white/10 rounded-full px-3 py-1 bg-white/5">{p.type}</span>
+                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-1">
+                  <button className="p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors" onClick={() => setModal(p)}>
+                    <Edit2 size={16} />
+                  </button>
+                  <button className="p-2 rounded-lg text-red-500/50 hover:text-red-400 hover:bg-red-500/10 transition-colors" onClick={() => del(p._id)}>
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
-              <span className="font-mono text-[12px] text-white/35">{p.tagline}</span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="font-mono text-[11px] text-white/30 border border-white/10 rounded-full px-2 py-0.5">{p.type}</span>
-              <button className="btn btn-sm btn-ghost btn-square text-white/40 hover:text-white/80" onClick={() => setModal(p)}>
-                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-              </button>
-              <button className="btn btn-sm btn-ghost btn-square text-error/50 hover:text-error" onClick={() => del(p._id)}>
-                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <polyline points="3 6 5 6 21 6"/>
-                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                  <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        ))}
+            </motion.div>
+          ))}
+        </AnimatePresence>
         {projects.length === 0 && (
-          <div className="py-16 text-center text-white/25">
-            <p className="font-mono text-[13px]">Aucun projet. Créez-en un !</p>
+          <div className="py-20 text-center text-white/30 bg-white/[0.02] border border-white/5 rounded-2xl">
+            <p className="font-mono text-[14px]">Aucun projet. Créez-en un !</p>
           </div>
         )}
-      </div>
+      </motion.div>
 
-      {modal && (
-        <Modal project={modal === "new" ? null : modal}
-          onClose={() => setModal(null)}
-          onSave={() => { setModal(null); load(); }} />
-      )}
+      <AnimatePresence>
+        {modal && (
+          <Modal project={modal === "new" ? null : modal}
+            onClose={() => setModal(null)}
+            onSave={() => { setModal(null); load(); }} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -2,47 +2,27 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { motion, useScroll, useSpring } from "framer-motion";
 import api from "../api";
 import CommentSection from "../components/CommentSection";
 
-const COVER_COLORS = ["#1a103f", "#0d1a2e", "#1a1a0d", "#1a0d1a"];
-const TAG_COLOR = { SaaS: "#e779c1", Security: "#58c7f3", MongoDB: "#47A248" };
+const COVER_COLORS = ["#03045e", "#023e8a", "#0077b6", "#010214"];
+const TAG_COLOR = { SaaS: "#00b4d8", Security: "#48cae4", MongoDB: "#0096c7" };
 
 const IconArrowLeft = () => (
-  <svg
-    width="16"
-    height="16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    viewBox="0 0 24 24"
-  >
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
     <line x1="19" y1="12" x2="5" y2="12" />
     <polyline points="12 19 5 12 12 5" />
   </svg>
 );
 const IconClock = () => (
-  <svg
-    width="13"
-    height="13"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-  >
+  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="10" />
     <polyline points="12 6 12 12 16 14" />
   </svg>
 );
 const IconCalendar = () => (
-  <svg
-    width="13"
-    height="13"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-  >
+  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
     <rect x="3" y="4" width="18" height="18" rx="2" />
     <line x1="16" y1="2" x2="16" y2="6" />
     <line x1="8" y1="2" x2="8" y2="6" />
@@ -57,10 +37,16 @@ export default function BlogPostPage() {
   const [loading, setLoad] = useState(true);
   const [notFound, set404] = useState(false);
 
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Réinitialiser les estados quand le slug change
     setPost(null);
     set404(false);
     setLoad(true);
@@ -98,7 +84,7 @@ export default function BlogPostPage() {
   if (notFound) return <NotFound />;
   if (!post) return null;
 
-  const accent = TAG_COLOR[post.tag] || "#e779c1";
+  const accent = TAG_COLOR[post.tag] || "#00b4d8";
   const date = new Date(post.createdAt).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long",
@@ -106,12 +92,18 @@ export default function BlogPostPage() {
   });
 
   return (
-    <div className="min-h-screen" style={{ background: "#0c061e" }}>
+    <div className="min-h-screen bg-deep-space">
+      {/* Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-brand-500 origin-left z-50 shadow-[0_0_10px_rgba(0,180,216,0.5)]"
+        style={{ scaleX }}
+      />
+
       {/* ── Cover hero ────────────────────────────────── */}
       <div
         className="relative flex flex-col items-center justify-end w-full overflow-hidden"
         style={{
-          minHeight: 280,
+          minHeight: 320,
           background: post.cover ? "transparent" : COVER_COLORS[0],
         }}
       >
@@ -120,32 +112,36 @@ export default function BlogPostPage() {
             <img
               src={post.cover}
               alt="cover"
-              className="absolute inset-0 object-cover w-full h-full"
+              className="absolute inset-0 object-cover w-full h-full opacity-60"
             />
             <div
               className="absolute inset-0"
               style={{
-                background:
-                  "linear-gradient(to bottom, rgba(12,6,30,0.3) 0%, rgba(12,6,30,0.92) 100%)",
+                background: "linear-gradient(to bottom, rgba(1,2,20,0.1) 0%, rgba(1,2,20,1) 100%)",
               }}
             />
           </>
         ) : (
-          <div className="absolute inset-0 sw-grid-bg opacity-40" />
+          <div className="absolute inset-0 sw-grid-bg opacity-40 mix-blend-overlay" />
         )}
 
-        <div className="relative z-10 w-full max-w-3xl px-6 pt-24 pb-10 mx-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 w-full max-w-3xl px-6 pt-24 pb-10 mx-auto"
+        >
           {/* Back button */}
           <button
             onClick={handleBackClick}
-            className="inline-flex items-center gap-2 font-mono text-[12px] text-white/40 hover:text-white/80 mb-6 transition-colors bg-none border-none cursor-pointer"
+            className="inline-flex items-center gap-2 font-mono text-[12px] text-white/50 hover:text-white mb-6 transition-colors bg-none border-none cursor-pointer group"
           >
-            <IconArrowLeft /> Retour
+            <span className="group-hover:-translate-x-1 transition-transform"><IconArrowLeft /></span> Retour
           </button>
 
           {/* Tag */}
           <span
-            className="inline-block font-mono text-[11px] px-3 py-1 rounded-full mb-4"
+            className="inline-block font-mono text-[11px] px-3 py-1 rounded-full mb-6 backdrop-blur-md"
             style={{
               background: `${accent}20`,
               color: accent,
@@ -157,61 +153,68 @@ export default function BlogPostPage() {
 
           {/* Title */}
           <h1
-            className="font-ubuntu font-bold leading-[1.25] text-white mb-5"
-            style={{ fontSize: "clamp(24px,4vw,42px)" }}
+            className="font-display font-bold leading-[1.2] text-white mb-6"
+            style={{ fontSize: "clamp(28px, 5vw, 48px)" }}
           >
             {post.title}
           </h1>
 
           {/* Meta */}
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-1.5 text-white/40">
+            <div className="flex items-center gap-1.5 text-white/50">
               <IconCalendar />
               <span className="font-mono text-[12px]">{date}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-white/40">
+            <div className="flex items-center gap-1.5 text-brand-400">
               <IconClock />
               <span className="font-mono text-[12px]">{post.readTime}</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* ── Article body ──────────────────────────────── */}
       <div className="max-w-3xl px-6 py-12 mx-auto">
         {/* Excerpt */}
-        <p
-          className="font-ubuntu text-[17px] leading-relaxed mb-10 pb-10"
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="font-sans text-[18px] leading-relaxed mb-10 pb-10 font-light"
           style={{
-            color: "rgba(255,255,255,0.55)",
-            borderBottom: "1px solid rgba(255,255,255,0.07)",
+            color: "rgba(255,255,255,0.7)",
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
           }}
         >
           {post.excerpt}
-        </p>
+        </motion.p>
 
         {/* Markdown content */}
-        <div className="blog-prose">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="blog-prose"
+        >
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {post.content}
           </ReactMarkdown>
-        </div>
+        </motion.div>
 
         {/* Comments Section */}
-        <CommentSection postSlug={post.slug} />
+        <div className="mt-16 pt-8 border-t border-white/10">
+          <CommentSection postSlug={post.slug} />
+        </div>
 
         {/* Footer */}
-        <div
-          className="flex items-center justify-between pt-8 mt-16"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
-        >
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 mt-16 border-t border-white/10">
           <button
             onClick={handleBlogLink}
-            className="inline-flex items-center gap-2 font-mono text-[13px] text-white/40 hover:text-white/70 transition-colors bg-none border-none cursor-pointer"
+            className="inline-flex items-center gap-2 font-mono text-[13px] text-white/50 hover:text-brand-400 transition-colors bg-none border-none cursor-pointer group"
           >
-            <IconArrowLeft /> Tous les articles
+            <span className="group-hover:-translate-x-1 transition-transform"><IconArrowLeft /></span> Tous les articles
           </button>
-          <span className="font-mono text-[11px] text-white/20">
+          <span className="font-mono text-[12px] text-white/30">
             Jonathan · {date}
           </span>
         </div>
@@ -223,15 +226,12 @@ export default function BlogPostPage() {
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function BlogSkeleton() {
   return (
-    <div
-      className="min-h-screen animate-pulse"
-      style={{ background: "#0c061e" }}
-    >
-      <div className="h-64 bg-white/5" />
-      <div className="flex flex-col max-w-3xl gap-4 px-6 py-12 mx-auto">
-        <div className="w-1/4 h-6 rounded bg-white/10" />
-        <div className="w-3/4 h-10 rounded bg-white/10" />
-        <div className="w-full h-4 rounded bg-white/5" />
+    <div className="min-h-screen animate-pulse bg-deep-space">
+      <div className="h-[320px] bg-white/5" />
+      <div className="flex flex-col max-w-3xl gap-6 px-6 py-12 mx-auto">
+        <div className="w-1/4 h-8 rounded-full bg-white/10" />
+        <div className="w-3/4 h-12 rounded bg-white/10" />
+        <div className="w-full h-4 rounded bg-white/5 mt-8" />
         <div className="w-5/6 h-4 rounded bg-white/5" />
         <div className="w-4/5 h-4 rounded bg-white/5" />
       </div>
@@ -242,14 +242,11 @@ function BlogSkeleton() {
 // ── Not found ─────────────────────────────────────────────────────────────────
 function NotFound() {
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen gap-5"
-      style={{ background: "#0c061e" }}
-    >
-      <p className="font-mono text-[13px] text-white/30">
+    <div className="flex flex-col items-center justify-center min-h-screen gap-5 bg-deep-space">
+      <p className="font-mono text-[14px] text-white/40">
         Article introuvable.
       </p>
-      <Link to="/#blog" className="btn btn-primary btn-sm rounded-[9px]">
+      <Link to="/?section=blog" className="px-6 py-3 rounded-xl bg-brand-500/20 text-brand-400 hover:bg-brand-500/30 transition-colors font-sans font-medium">
         ← Retour au blog
       </Link>
     </div>
