@@ -79,7 +79,7 @@ export default function HeroSection() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -40, opacity: 0 }}
                   transition={{ duration: 0.5, ease: "anticipate" }}
-                  className="absolute left-0 gradient-text w-full max-w-full"
+                  className="inline-block gradient-text whitespace-nowrap"
                 >
                   {TITLES[idx]}
                 </motion.span>
