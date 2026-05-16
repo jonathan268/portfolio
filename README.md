@@ -54,13 +54,6 @@ npm install
 npm run dev         # Démarre sur http://localhost:5173
 ```
 
-**Accès admin local :** `http://localhost:5173/admin`
-- Email : `admin@portfolio.cm`
-- Mot de passe : `Admin@2024!`
-
-⚠️ **Changez le mot de passe** en base après la première connexion !
-
----
 
 ## 2. Déploiement en production
 
