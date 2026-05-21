@@ -172,9 +172,3 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes splash-bar {
-  0%   { transform: scaleX(0); }
-  40%  { transform: scaleX(0.6); }
-  80%  { transform: scaleX(0.85); }
-  100% { transform: scaleX(1); }
-}
