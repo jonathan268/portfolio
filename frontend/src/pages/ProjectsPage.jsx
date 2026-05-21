@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Sparkles, ArrowUpRight, Github, ArrowLeft } from "lucide-react";
+import { Sparkles, ArrowUpRight, Github, ArrowLeft, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -76,7 +76,7 @@ export default function ProjectsPage() {
         </motion.div>
 
         {/* Projects Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
           <AnimatePresence mode="popLayout">
             {loading && Array.from({ length: 6 }).map((_, i) => (
               <motion.div 
@@ -96,15 +96,16 @@ export default function ProjectsPage() {
             ))}
 
             {!loading && filtered.map((p) => (
-              <motion.div 
-                key={p._id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
-                className="bento-card group"
-              >
+                <motion.div 
+                  key={p._id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
+                  className="bento-card group"
+                  onClick={() => navigate(`/projects/${p._id}`)}
+                >
                 {/* ── Image Header ── */}
                 <div className="relative w-full h-64 overflow-hidden rounded-t-[24px]">
                   {p.imageUrl ? (
@@ -163,13 +164,16 @@ export default function ProjectsPage() {
 
                   {/* Footer Actions */}
                   <div className="flex gap-4 pt-6 border-t border-white/10 mt-auto">
+                    <button className="flex items-center gap-2 font-medium text-[14px] text-brand-400 hover:text-white transition-colors">
+                      Détails <ExternalLink size={16} />
+                    </button>
                     {p.live && (
-                      <a href={p.live} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-medium text-[14px] text-white hover:text-brand-400 transition-colors">
+                      <a href={p.live} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-2 font-medium text-[14px] text-white hover:text-brand-400 transition-colors">
                         View Live <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                       </a>
                     )}
                     {p.github && (
-                      <a href={p.github} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-medium text-[14px] text-white/50 hover:text-white transition-colors ml-auto">
+                      <a href={p.github} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-2 font-medium text-[14px] text-white/50 hover:text-white transition-colors ml-auto">
                         <Github size={16} /> Source
                       </a>
                     )}

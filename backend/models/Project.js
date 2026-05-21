@@ -11,6 +11,12 @@ const projectSchema = new mongoose.Schema({
   live:        { type: String, default: null },
   github:      { type: String, default: null },
   imageUrl:    { type: String, default: null },
+  screenshots: [{ type: String }],
+  summary:     { type: String, default: "" },
+  featureDetails: [{
+    name:        { type: String },
+    description: { type: String },
+  }],
   order:       { type: Number, default: 0 },
   published:   { type: Boolean, default: true },
 }, { timestamps: true });

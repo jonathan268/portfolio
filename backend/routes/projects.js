@@ -17,6 +17,17 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /api/projects/:id
+router.get("/:id", async (req, res) => {
+  try {
+    const project = await Project.findOne({ _id: req.params.id, published: true });
+    if (!project) return res.status(404).json({ success: false, message: "Projet introuvable" });
+    res.json({ success: true, data: project });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // ── ADMIN ───────────────────────────────────
 
 // GET /api/projects/admin/all

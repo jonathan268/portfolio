@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 
 import Home from "./pages/Home";
 import ProjectsPage from "./pages/ProjectsPage";
+import ProjectDetail from "./pages/ProjectDetail";
 import BlogPostPage from "./pages/BlogPost";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -23,6 +24,7 @@ export default function App() {
         {/* ── Public ── */}
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
 
         {/* ── Admin login ── */}

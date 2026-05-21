@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Image as ImageIcon, CheckCircle, Circle, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Image as ImageIcon, CheckCircle, Circle, X, GripVertical } from "lucide-react";
 import api from "../../api";
 
 const EMPTY = {
   name:"", tagline:"", description:"", features:"", stack:"",
-  type:"saas", live:"", github:"", imageUrl:"", featured:false, published:true, order:0,
+  type:"saas", live:"", github:"", imageUrl:"", screenshots:[],
+  summary:"", featureDetails:[],
+  featured:false, published:true, order:0,
 };
 
 // ── Image Uploader ────────────────────────────────────────────────────────────
@@ -95,11 +97,125 @@ function ImageUploader({ value, onChange }) {
   );
 }
 
+// ── Screenshots Uploader ──────────────────────────────────────────────────────
+function ScreenshotsUploader({ value, onChange }) {
+  const inputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleFile = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Seules les images sont acceptées."); return; }
+    if (file.size > 5 * 1024 * 1024)    { toast.error("Image trop lourde (max 5 Mo)."); return; }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const res = await api.post("/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
+      onChange([...(value || []), res.data.url]);
+      toast.success("Capture uploadée !");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Erreur lors de l'upload.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onInputChange = (e) => handleFile(e.target.files?.[0]);
+  const onDrop = (e) => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files?.[0]); };
+  const remove = (idx) => onChange((value || []).filter((_, i) => i !== idx));
+
+  return (
+    <div>
+      <label className="font-mono text-[11px] text-brand-400 tracking-[1px] uppercase block mb-2">
+        Captures d'écran
+      </label>
+
+      <div className="flex flex-wrap gap-3 mb-3">
+        {(value || []).map((url, idx) => (
+          <div key={idx} className="relative group w-[120px] h-[80px] rounded-xl overflow-hidden border border-white/10">
+            <img src={url} alt={`Capture ${idx + 1}`} className="object-cover w-full h-full" />
+            <button type="button"
+              onClick={() => remove(idx)}
+              className="absolute inset-0 flex items-center justify-center bg-[#010214]/80 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Trash2 size={16} className="text-red-400" />
+            </button>
+          </div>
+        ))}
+        {uploading && (
+          <div className="w-[120px] h-[80px] rounded-xl border border-white/10 bg-white/5 flex items-center justify-center">
+            <span className="w-5 h-5 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin" />
+          </div>
+        )}
+      </div>
+
+      <div
+        onClick={() => !uploading && inputRef.current?.click()}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={onDrop}
+        className="relative w-full h-[80px] overflow-hidden transition-all border border-dashed cursor-pointer rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center gap-2"
+        style={{ borderColor: dragOver ? "#00b4d8" : "rgba(255,255,255,0.1)" }}
+      >
+        <ImageIcon size={18} className={dragOver ? "text-brand-400" : "text-white/20"} />
+        <span className="font-mono text-[11px]" style={{ color: dragOver ? "#00b4d8" : "rgba(255,255,255,0.3)" }}>
+          {dragOver ? "Déposer l'image ici" : "Ajouter une capture"}
+        </span>
+      </div>
+
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={onInputChange} />
+    </div>
+  );
+}
+
+// ── Feature Details Editor ────────────────────────────────────────────────────
+function FeatureDetailsEditor({ value, onChange }) {
+  const items = value || [];
+
+  const add = () => onChange([...items, { name: "", description: "" }]);
+  const remove = (idx) => onChange(items.filter((_, i) => i !== idx));
+  const setItem = (idx, field, val) => {
+    const updated = items.map((item, i) => i === idx ? { ...item, [field]: val } : item);
+    onChange(updated);
+  };
+
+  return (
+    <div>
+      <label className="font-mono text-[11px] text-brand-400 tracking-[1px] uppercase block mb-2">
+        Détails des fonctionnalités
+      </label>
+      <div className="flex flex-col gap-3">
+        {items.map((item, idx) => (
+          <div key={idx} className="flex gap-2 items-start p-3 rounded-xl bg-white/[0.03] border border-white/5">
+            <div className="flex-1 flex flex-col gap-2">
+              <input type="text" placeholder="Nom de la fonctionnalité"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-[13px] outline-none focus:border-brand-500/50 transition-colors"
+                value={item.name} onChange={(e) => setItem(idx, "name", e.target.value)} />
+              <textarea rows={2} placeholder="Description détaillée..."
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-[13px] outline-none focus:border-brand-500/50 transition-colors resize-none"
+                value={item.description} onChange={(e) => setItem(idx, "description", e.target.value)} />
+            </div>
+            <button type="button" onClick={() => remove(idx)}
+              className="p-1.5 rounded-lg text-red-400/50 hover:text-red-400 hover:bg-red-500/10 transition-colors mt-1">
+              <X size={14} />
+            </button>
+          </div>
+        ))}
+        <button type="button" onClick={add}
+          className="flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-white/10 text-white/40 hover:text-white/70 hover:border-white/20 transition-colors text-[13px]">
+          <Plus size={16} /> Ajouter une fonctionnalité détaillée
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Modal ─────────────────────────────────────────────────────────────────────
 function Modal({ project, onClose, onSave }) {
   const [form, setForm] = useState(
     project
-      ? { ...project, features: project.features?.join("\n") || "", stack: project.stack?.join(", ") || "", imageUrl: project.imageUrl || "" }
+      ? { ...project, features: project.features?.join("\n") || "", stack: project.stack?.join(", ") || "", imageUrl: project.imageUrl || "", screenshots: project.screenshots || [], summary: project.summary || "", featureDetails: project.featureDetails || [] }
       : { ...EMPTY }
   );
   const [loading, setLoading] = useState(false);
@@ -116,6 +232,8 @@ function Modal({ project, onClose, onSave }) {
         features: form.features.split("\n").map(s => s.trim()).filter(Boolean),
         stack:    form.stack.split(",").map(s => s.trim()).filter(Boolean),
         imageUrl: form.imageUrl || null,
+        screenshots: form.screenshots || [],
+        featureDetails: (form.featureDetails || []).filter(fd => fd.name || fd.description),
       };
       if (project?._id) {
         await api.put(`/projects/${project._id}`, payload);
@@ -161,11 +279,17 @@ function Modal({ project, onClose, onSave }) {
           </div>
 
           <Field label="Tagline" value={form.tagline} onChange={v => set("tagline", v)} placeholder="AI Inventory SaaS" />
-          <Textarea label="Description" value={form.description} onChange={v => set("description", v)} rows={3} placeholder="Description du projet..." />
+          <Textarea label="Description courte" value={form.description} onChange={v => set("description", v)} rows={3} placeholder="Courte description pour les cartes..." />
+          <Textarea label="Résumé complet" value={form.summary} onChange={v => set("summary", v)} rows={4} placeholder="Résumé détaillé du projet..." />
           <Textarea label="Fonctionnalités (une par ligne)" value={form.features} onChange={v => set("features", v)} rows={4} placeholder={"Gestion produits\nSuivi des ventes\n..."} />
-          <Field label="Stack (séparées par virgule)" value={form.stack} onChange={v => set("stack", v)} placeholder="React, Node.js, MongoDB" />
+
+          <FeatureDetailsEditor value={form.featureDetails} onChange={v => set("featureDetails", v)} />
+
+          <Field label="Stack / Langages (séparés par virgule)" value={form.stack} onChange={v => set("stack", v)} placeholder="React, Node.js, MongoDB" />
 
           <ImageUploader value={form.imageUrl} onChange={v => set("imageUrl", v)} />
+
+          <ScreenshotsUploader value={form.screenshots} onChange={v => set("screenshots", v)} />
 
           <div className="grid grid-cols-2 gap-5">
             <Field label="URL Live" value={form.live} onChange={v => set("live", v)} placeholder="https://..." />
