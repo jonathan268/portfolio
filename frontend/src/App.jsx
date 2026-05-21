@@ -1,8 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState, useCallback } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import SplashScreen from "./components/SplashScreen";
 
 const Home = lazy(() => import("./pages/Home"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
@@ -24,34 +25,40 @@ const PageLoader = () => (
 );
 
 export default function App() {
+  const [ready, setReady] = useState(false);
+  const finish = useCallback(() => setReady(true), []);
+
   return (
-    <AuthProvider>
-      <Navbar />
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/projects/:id" element={<ProjectDetail />} />
-          <Route path="/blog/:slug" element={<BlogPostPage />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="projects" element={<AdminProjects />} />
-            <Route path="blog" element={<AdminBlog />} />
-            <Route path="skills" element={<AdminSkills />} />
-            <Route path="comments" element={<AdminComments />} />
-            <Route path="messages" element={<AdminMessages />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
-    </AuthProvider>
+    <>
+      {!ready && <SplashScreen onFinish={finish} />}
+      <AuthProvider>
+        <Navbar />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="projects" element={<AdminProjects />} />
+              <Route path="blog" element={<AdminBlog />} />
+              <Route path="skills" element={<AdminSkills />} />
+              <Route path="comments" element={<AdminComments />} />
+              <Route path="messages" element={<AdminMessages />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </AuthProvider>
+    </>
   );
 }

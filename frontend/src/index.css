@@ -159,3 +159,22 @@
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.1);
 }
+
+/* ── Splash Screen ── */
+@keyframes splash-char {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.8); filter: blur(4px); }
+  60%  { opacity: 1; transform: translateY(-4px) scale(1.05); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes splash-fade {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes splash-bar {
+  0%   { transform: scaleX(0); }
+  40%  { transform: scaleX(0.6); }
+  80%  { transform: scaleX(0.85); }
+  100% { transform: scaleX(1); }
+}
