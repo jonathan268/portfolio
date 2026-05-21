@@ -127,14 +127,16 @@ export default function TechIcon({ name, size = 20, accentColor }) {
           alt={name}
           width={size}
           height={size}
+          loading="lazy"
           style={{
             filter: (key === "express" || key === "express.js" || key === "nextjs" || key === "next.js" || key === "github" || key === "rust" || key === "vercel" || key === "apple")
               ? "brightness(0) invert(1) opacity(0.85)"
               : undefined,
             display: "block",
           }}
-          onError={e => { e.currentTarget.parentElement.innerHTML = fallbackHTML(name, accentColor); }}
+          onError={e => { e.currentTarget.style.display = "none"; e.currentTarget.parentElement.querySelector(".fallback")?.classList.remove("hidden"); }}
         />
+        <FallbackBadge name={name} accentColor={accentColor} className="hidden fallback" />
       </div>
     );
   }
@@ -143,12 +145,12 @@ export default function TechIcon({ name, size = 20, accentColor }) {
   return <FallbackBadge name={name} accentColor={accentColor} />;
 }
 
-function FallbackBadge({ name, accentColor }) {
+function FallbackBadge({ name, accentColor, className = "" }) {
   const color = accentColor || "#e779c1";
   return (
     <div
       title={name}
-      className="flex items-center justify-center rounded-md shrink-0 px-1.5"
+      className={`flex items-center justify-center rounded-md shrink-0 px-1.5 ${className}`}
       style={{
         height: 30,
         minWidth: 30,
@@ -163,7 +165,3 @@ function FallbackBadge({ name, accentColor }) {
   );
 }
 
-function fallbackHTML(name, accentColor) {
-  const color = accentColor || "#e779c1";
-  return `<span style="font-family:monospace;font-size:9px;color:${color};padding:0 4px">${name.slice(0,5)}</span>`;
-}

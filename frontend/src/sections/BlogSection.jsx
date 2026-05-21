@@ -9,10 +9,12 @@ export default function BlogSection() {
   const [loading, setLoad] = useState(true);
 
   useEffect(() => {
-    api.get("/blog")
+    const controller = new AbortController();
+    api.get("/blog", { signal: controller.signal })
       .then(r => setPosts(r.data.data))
       .catch(() => {})
-      .finally(() => setLoad(false));
+      .finally(() => { if (!controller.signal.aborted) setLoad(false); });
+    return () => controller.abort();
   }, []);
 
   const containerVariants = {
@@ -67,6 +69,7 @@ export default function BlogSection() {
                     <img 
                       src={post.cover} 
                       alt={post.title} 
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   </div>

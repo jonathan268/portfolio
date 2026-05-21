@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useReveal } from "../hooks/useReveal";
 
 const TRANSFORMS = {
@@ -8,7 +9,7 @@ const TRANSFORMS = {
   scale: "scale(0.95)",
 };
 
-export default function Reveal({ children, delay = 0, dir = "up", className = "", style = {} }) {
+function Reveal({ children, delay = 0, dir = "up", className = "", style = {} }) {
   const [ref, vis] = useReveal();
 
   return (
@@ -26,3 +27,5 @@ export default function Reveal({ children, delay = 0, dir = "up", className = ""
     </div>
   );
 }
+
+export default memo(Reveal);

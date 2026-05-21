@@ -1,55 +1,57 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
-import Home from "./pages/Home";
-import ProjectsPage from "./pages/ProjectsPage";
-import ProjectDetail from "./pages/ProjectDetail";
-import BlogPostPage from "./pages/BlogPost";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminLayout from "./pages/admin/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProjects from "./pages/admin/AdminProjects";
-import AdminBlog from "./pages/admin/AdminBlog";
-import AdminSkills from "./pages/admin/AdminSkills";
-import AdminMessages from "./pages/admin/AdminMessages";
-import AdminComments from "./pages/admin/AdminComments";
+const Home = lazy(() => import("./pages/Home"));
+const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
+const BlogPostPage = lazy(() => import("./pages/BlogPost"));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminProjects = lazy(() => import("./pages/admin/AdminProjects"));
+const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
+const AdminSkills = lazy(() => import("./pages/admin/AdminSkills"));
+const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
+const AdminComments = lazy(() => import("./pages/admin/AdminComments"));
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-deep-space">
+    <span className="w-8 h-8 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin" />
+  </div>
+);
 
 export default function App() {
   return (
     <AuthProvider>
       <Navbar />
-      <Routes>
-        {/* ── Public ── */}
-        <Route path="/" element={<Home />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/projects/:id" element={<ProjectDetail />} />
-        <Route path="/blog/:slug" element={<BlogPostPage />} />
-
-        {/* ── Admin login ── */}
-        <Route path="/admin" element={<AdminLogin />} />
-
-        {/* ── Admin dashboard (protected) ── */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="projects" element={<AdminProjects />} />
-          <Route path="blog" element={<AdminBlog />} />
-          <Route path="skills" element={<AdminSkills />} />
-          <Route path="comments" element={<AdminComments />} />
-          <Route path="messages" element={<AdminMessages />} />
-        </Route>
-
-        {/* ── 404 ── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="projects" element={<AdminProjects />} />
+            <Route path="blog" element={<AdminBlog />} />
+            <Route path="skills" element={<AdminSkills />} />
+            <Route path="comments" element={<AdminComments />} />
+            <Route path="messages" element={<AdminMessages />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </AuthProvider>
   );
 }

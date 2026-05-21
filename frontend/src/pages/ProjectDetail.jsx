@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Github, Sparkles, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
@@ -13,10 +13,12 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    api.get(`/projects/${id}`)
+    const controller = new AbortController();
+    api.get(`/projects/${id}`, { signal: controller.signal })
       .then((r) => setProject(r.data.data))
-      .catch(() => navigate("/projects", { replace: true }))
-      .finally(() => setLoading(false));
+      .catch(() => { if (!controller.signal.aborted) navigate("/projects", { replace: true }); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, [id]);
 
   if (loading) {
@@ -29,7 +31,10 @@ export default function ProjectDetail() {
 
   if (!project) return null;
 
-  const screenshots = project.screenshots?.length > 0 ? project.screenshots : (project.imageUrl ? [project.imageUrl] : []);
+  const screenshots = useMemo(
+    () => project.screenshots?.length > 0 ? project.screenshots : (project.imageUrl ? [project.imageUrl] : []),
+    [project]
+  );
 
   return (
     <div className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-deep-space">
@@ -97,6 +102,7 @@ export default function ProjectDetail() {
                   <img
                     src={screenshots[imgIndex]}
                     alt={`Capture ${imgIndex + 1}`}
+                    loading="lazy"
                     className="w-full aspect-video object-cover"
                   />
                   {screenshots.length > 1 && (
@@ -124,7 +130,7 @@ export default function ProjectDetail() {
                     {screenshots.map((url, i) => (
                       <button key={i} onClick={() => setImgIndex(i)}
                         className={`shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${i === imgIndex ? 'border-brand-400 opacity-100' : 'border-transparent opacity-50 hover:opacity-80'}`}>
-                        <img src={url} alt={`Miniature ${i + 1}`} className="object-cover w-full h-full" />
+                        <img src={url} alt={`Miniature ${i + 1}`} loading="lazy" className="object-cover w-full h-full" />
                       </button>
                     ))}
                   </div>

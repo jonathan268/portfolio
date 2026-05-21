@@ -10,7 +10,9 @@ router.get("/", async (req, res) => {
     const { type } = req.query;
     const filter = { published: true };
     if (type && type !== "all") filter.type = type;
-    const projects = await Project.find(filter).sort({ order: 1, createdAt: -1 });
+    const projects = await Project.find(filter)
+      .select("name tagline description type imageUrl stack featured live github order createdAt")
+      .sort({ order: 1, createdAt: -1 });
     res.json({ success: true, data: projects });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

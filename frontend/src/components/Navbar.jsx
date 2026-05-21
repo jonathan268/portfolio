@@ -1,5 +1,5 @@
 import { Terminal } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -24,13 +24,16 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const location              = useLocation();
   const navigate              = useNavigate();
+  const rafId                 = useRef();
 
   const go = (id) => {
     if (location.pathname !== "/") {
       navigate("/");
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      });
     } else {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     }
@@ -40,16 +43,38 @@ export default function Navbar() {
   useEffect(() => {
     if (location.pathname !== "/") return;
     const IDS = NAV.map(n => n.id);
+    let lastActive = "";
+    let lastScrolled = false;
+
     const fn = () => {
-      const y = window.scrollY + 130;
-      setScrolled(window.scrollY > 20);
-      IDS.forEach(id => {
-        const el = document.getElementById(id);
-        if (el && y >= el.offsetTop && y < el.offsetTop + el.offsetHeight) setActive(id);
+      if (rafId.current) return;
+      rafId.current = requestAnimationFrame(() => {
+        rafId.current = null;
+        const y = window.scrollY + 130;
+
+        const shouldScroll = window.scrollY > 20;
+        if (shouldScroll !== lastScrolled) {
+          lastScrolled = shouldScroll;
+          setScrolled(shouldScroll);
+        }
+
+        for (const id of IDS) {
+          const el = document.getElementById(id);
+          if (el && y >= el.offsetTop && y < el.offsetTop + el.offsetHeight) {
+            if (id !== lastActive) {
+              lastActive = id;
+              setActive(id);
+            }
+            break;
+          }
+        }
       });
     };
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", fn);
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
   }, [location.pathname]);
 
   if (location.pathname.startsWith("/admin")) return null;
@@ -65,7 +90,6 @@ export default function Navbar() {
         }`}
       >
         <div className="flex items-center justify-between px-4 py-3 border rounded-full bg-white/5 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          {/* Logo */}
           <button onClick={() => go("hero")} className="flex items-center gap-2.5 transition-transform hover:scale-105">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 text-deep-space">
               <Terminal size={18} strokeWidth={2.5} />
@@ -75,7 +99,6 @@ export default function Navbar() {
             </span>
           </button>
 
-          {/* Desktop nav */}
           <nav className="hidden gap-1 md:flex bg-white/5 p-1 rounded-full border border-white/5">
             {NAV.map(({ id, label }) => (
               <button
@@ -97,7 +120,6 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Actions */}
           <div className="flex items-center gap-2">
             <a
               href="https://github.com/jonathan268"
@@ -120,13 +142,12 @@ export default function Navbar() {
         </div>
       </motion.div>
 
-      {/* Mobile menu focus */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
-            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 z-40 bg-deep-space/90 flex flex-col items-center justify-center"
             onClick={() => setMenu(false)}
           >

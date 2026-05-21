@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Sparkles, ArrowUpRight, Github, Code2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../api";
@@ -16,14 +16,22 @@ export default function ProjectsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/projects")
+    const controller = new AbortController();
+    api.get("/projects", { signal: controller.signal })
       .then((r) => setProjects(r.data.data))
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
-  const filtered = filter === "all" ? projects : projects.filter((p) => p.type === filter);
-  const count = (k) => (k === "all" ? projects.length : projects.filter((p) => p.type === k).length);
+  const filtered = useMemo(
+    () => filter === "all" ? projects : projects.filter((p) => p.type === filter),
+    [filter, projects]
+  );
+  const count = useMemo(
+    () => (k) => (k === "all" ? projects.length : projects.filter((p) => p.type === k).length),
+    [projects]
+  );
 
   return (
     <section id="projects" className="section-pad">
@@ -92,6 +100,7 @@ export default function ProjectsSection() {
                     <img
                       src={p.imageUrl}
                       alt={p.name}
+                      loading="lazy"
                       className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                       onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
                     />
@@ -101,6 +110,9 @@ export default function ProjectsSection() {
                   
                   {/* Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#010214] via-[#010214]/40 to-transparent opacity-90" />
+                  {p.imageUrl && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#010214] via-[#010214]/30 to-transparent" />
+                  )}
 
                   {/* Badges */}
                   <div className="absolute top-5 left-5 flex gap-2">

@@ -52,14 +52,16 @@ export default function AboutSection() {
                  <img 
                    src={Image} 
                    alt="Jonathan Dev" 
+                   loading="lazy"
                    className="object-cover w-full h-full scale-100 group-hover:scale-105 transition-transform duration-700"
                  />
               </div>
             </div>
 
             {/* Floating Element */}
-            <motion.div 
-              animate={{ y: [0, -10, 0] }}
+            <motion.div
+              whileInView={{ y: [0, -10, 0] }}
+              viewport={{ once: true }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
               className="absolute -right-4 -bottom-4 lg:-right-8 lg:-bottom-8 glass-panel px-6 py-4 rounded-2xl flex items-center gap-4 shadow-2xl"
             >

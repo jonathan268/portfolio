@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Sparkles, ArrowUpRight, Github, ArrowLeft, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -18,16 +18,23 @@ export default function ProjectsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Scroll to top when page loads
     window.scrollTo(0, 0);
-    api.get("/projects")
+    const controller = new AbortController();
+    api.get("/projects", { signal: controller.signal })
       .then((r) => setProjects(r.data.data))
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
-  const filtered = filter === "all" ? projects : projects.filter((p) => p.type === filter);
-  const count = (k) => (k === "all" ? projects.length : projects.filter((p) => p.type === k).length);
+  const filtered = useMemo(
+    () => filter === "all" ? projects : projects.filter((p) => p.type === filter),
+    [filter, projects]
+  );
+  const count = useMemo(
+    () => (k) => (k === "all" ? projects.length : projects.filter((p) => p.type === k).length),
+    [projects]
+  );
 
   return (
     <div className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-deep-space">
@@ -35,47 +42,49 @@ export default function ProjectsPage() {
       <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-brand-700/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute top-[40%] left-[-10%] w-[40vw] h-[40vw] bg-brand-400/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="container-md relative z-10 px-[6vw]">
+      <div className="relative z-10 px-[6vw]">
         
         {/* Navigation & Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-16"
-        >
-          <button 
-            onClick={() => navigate("/")}
-            className="flex items-center gap-2 text-white/50 hover:text-white transition-colors font-mono text-[13px] mb-8"
+        <div className="container-md mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-16"
           >
-            <ArrowLeft size={16} /> Retour à l'accueil
-          </button>
-          
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div>
-              <h1 className="font-display font-black text-[40px] md:text-[56px] text-white leading-tight tracking-tight mb-4">
-                Tous mes <span className="gradient-text">Projets</span>
-              </h1>
-              <p className="font-sans text-[16px] text-white/60 max-w-xl leading-relaxed">
-                Explorez l'ensemble de mes réalisations, des applications web interactives aux architectures d'API robustes.
-              </p>
-            </div>
+            <button 
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2 text-white/50 hover:text-white transition-colors font-mono text-[13px] mb-8"
+            >
+              <ArrowLeft size={16} /> Retour à l'accueil
+            </button>
+            
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div>
+                <h1 className="font-display font-black text-[40px] md:text-[56px] text-white leading-tight tracking-tight mb-4">
+                  Tous mes <span className="gradient-text">Projets</span>
+                </h1>
+                <p className="font-sans text-[16px] text-white/60 max-w-xl leading-relaxed">
+                  Explorez l'ensemble de mes réalisations, des applications web interactives aux architectures d'API robustes.
+                </p>
+              </div>
 
-            <div className="flex flex-wrap gap-3">
-              {FILTERS.map((f) => (
-                <button
-                  key={f.key}
-                  className={`neo-pill ${filter === f.key ? "active" : ""}`}
-                  onClick={() => setFilter(f.key)}
-                >
-                  {f.label}
-                  <span className="neo-count">{count(f.key)}</span>
-                </button>
-              ))}
+              <div className="flex flex-wrap gap-3">
+                {FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    className={`neo-pill ${filter === f.key ? "active" : ""}`}
+                    onClick={() => setFilter(f.key)}
+                  >
+                    {f.label}
+                    <span className="neo-count">{count(f.key)}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
-        {/* Projects Grid */}
+        {/* Projects Grid - Full width */}
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
           <AnimatePresence mode="popLayout">
             {loading && Array.from({ length: 6 }).map((_, i) => (
@@ -112,6 +121,7 @@ export default function ProjectsPage() {
                     <img
                       src={p.imageUrl}
                       alt={p.name}
+                      loading="lazy"
                       className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                       onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
                     />

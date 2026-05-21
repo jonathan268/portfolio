@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import api from "../api";
 
 const IconSend = () => (
@@ -43,24 +43,30 @@ export default function CommentSection({ postSlug }) {
 
   // Charger les commentaires approuvés
   useEffect(() => {
+    const controller = new AbortController();
     const fetchComments = async () => {
       try {
-        const res = await api.get(`/blog/${postSlug}/comments`);
-        console.log("📝 Commentaires chargés:", res.data.data);
+        const res = await api.get(`/blog/${postSlug}/comments`, { signal: controller.signal });
         setComments(res.data.data || []);
       } catch (err) {
-        console.error("Erreur lors du chargement des commentaires", err);
+        if (!controller.signal.aborted) console.error("Erreur lors du chargement des commentaires", err);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
     fetchComments();
 
-    // Charger l'email du localStorage s'il existe
     const savedEmail = localStorage.getItem("likerEmail");
     if (savedEmail) setLikerEmail(savedEmail);
+
+    return () => controller.abort();
   }, [postSlug]);
+
+  const likedIds = useMemo(() => {
+    if (!likerEmail || !comments.length) return new Set();
+    return new Set(comments.filter(c => c.likes?.includes(likerEmail)).map(c => c._id));
+  }, [likerEmail, comments]);
 
   const handleLike = async (commentId) => {
     if (!likerEmail) {
@@ -84,18 +90,13 @@ export default function CommentSection({ postSlug }) {
       });
 
       if (res.data.success) {
-        // Mettre à jour le commentaire en local
-        setComments(
-          comments.map((c) => (c._id === commentId ? res.data.data : c)),
+        setComments(prev =>
+          prev.map((c) => (c._id === commentId ? res.data.data : c)),
         );
       }
     } catch (err) {
       console.error("Erreur lors du like", err);
     }
-  };
-
-  const hasLiked = (comment) => {
-    return likerEmail && comment.likes && comment.likes.includes(likerEmail);
   };
 
   const handleChange = (e) => {
@@ -190,26 +191,16 @@ export default function CommentSection({ postSlug }) {
                 onClick={() => handleLike(comment._id)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[12px] font-ubuntu font-semibold transition-all duration-150"
                 style={{
-                  background: hasLiked(comment)
+                  background: likedIds.has(comment._id)
                     ? "rgba(231,121,193,0.2)"
                     : "rgba(255,255,255,0.05)",
-                  color: hasLiked(comment)
+                  color: likedIds.has(comment._id)
                     ? "#e779c1"
                     : "rgba(255,255,255,0.5)",
-                  border: `1px solid ${hasLiked(comment) ? "rgba(231,121,193,0.3)" : "rgba(255,255,255,0.1)"}`,
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = hasLiked(comment)
-                    ? "rgba(231,121,193,0.3)"
-                    : "rgba(255,255,255,0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = hasLiked(comment)
-                    ? "rgba(231,121,193,0.2)"
-                    : "rgba(255,255,255,0.05)";
+                  border: `1px solid ${likedIds.has(comment._id) ? "rgba(231,121,193,0.3)" : "rgba(255,255,255,0.1)"}`,
                 }}
               >
-                <IconHeart filled={hasLiked(comment)} />
+                <IconHeart filled={likedIds.has(comment._id)} />
                 <span>{comment.likes?.length || 0}</span>
               </button>
             </div>

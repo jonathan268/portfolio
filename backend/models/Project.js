@@ -21,4 +21,7 @@ const projectSchema = new mongoose.Schema({
   published:   { type: Boolean, default: true },
 }, { timestamps: true });
 
+projectSchema.index({ published: 1, type: 1, order: 1, createdAt: -1 });
+projectSchema.index({ published: 1 });
+
 module.exports = mongoose.model("Project", projectSchema);
