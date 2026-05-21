@@ -1,8 +1,20 @@
+import { useState, useEffect } from "react";
 import { User, Target, Coffee } from "lucide-react";
 import { motion } from "framer-motion";
-import Image from "../assets/profil.jpeg";
+import api from "../api";
+import defaultImage from "../assets/profil.jpeg";
 
 export default function AboutSection() {
+  const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    api.get("/profile", { signal: controller.signal })
+      .then(r => setProfileImage(r.data.data?.profileImage || null))
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -50,7 +62,7 @@ export default function AboutSection() {
               <div className="w-full h-full rounded-2xl overflow-hidden relative">
                  <div className="absolute inset-0 bg-blend-overlay bg-deep-space/20 z-10 mix-blend-color" />
                  <img 
-                   src={Image} 
+                   src={profileImage || defaultImage} 
                    alt="Jonathan Dev" 
                    loading="lazy"
                    className="object-cover w-full h-full scale-100 group-hover:scale-105 transition-transform duration-700"

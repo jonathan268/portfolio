@@ -5,6 +5,8 @@ const compression = require("compression");
 const mongoose = require("mongoose");
 const rateLimit = require("express-rate-limit");
 
+const Admin = require("./models/Admin");
+
 const app = express();
 
 // ── Middleware ──────────────────────────────
@@ -30,6 +32,16 @@ app.use("/api/messages", require("./routes/messages"));
 
 // ── Health check ────────────────────────────
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));
+
+// ── Public profile ─────────────────────────
+app.get("/api/profile", async (_, res) => {
+  try {
+    const admin = await Admin.findOne().select("email profileImage");
+    res.json({ success: true, data: admin || { email: "", profileImage: null } });
+  } catch {
+    res.status(500).json({ success: false, message: "Erreur serveur" });
+  }
+});
 
 // ── 404 handler ─────────────────────────────
 app.use((_, res) => res.status(404).json({ success: false, message: "Route not found" }));

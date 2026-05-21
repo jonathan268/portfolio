@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Github, Sparkles, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../api";
 
 export default function ProjectDetail() {
@@ -31,10 +31,7 @@ export default function ProjectDetail() {
 
   if (!project) return null;
 
-  const screenshots = useMemo(
-    () => project.screenshots?.length > 0 ? project.screenshots : (project.imageUrl ? [project.imageUrl] : []),
-    [project]
-  );
+  const screenshots = project.screenshots?.length > 0 ? project.screenshots : (project.imageUrl ? [project.imageUrl] : []);
 
   return (
     <div className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-deep-space">

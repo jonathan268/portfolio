@@ -28,7 +28,23 @@ router.post("/login", async (req, res) => {
 
 // GET /api/auth/me  (vérification token)
 router.get("/me", auth, (req, res) => {
-  res.json({ success: true, data: { email: req.admin.email } });
+  const admin = req.admin;
+  res.json({ success: true, data: { email: admin.email, profileImage: admin.profileImage } });
+});
+
+// PUT /api/auth/profile  (mettre à jour le profil)
+router.put("/profile", auth, async (req, res) => {
+  try {
+    const { profileImage } = req.body;
+    const admin = await Admin.findByIdAndUpdate(
+      req.admin._id,
+      { profileImage: profileImage || null },
+      { new: true }
+    );
+    res.json({ success: true, data: { email: admin.email, profileImage: admin.profileImage } });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 module.exports = router;

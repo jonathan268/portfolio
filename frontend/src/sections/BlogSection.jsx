@@ -1,20 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../api";
 import { Clock, ArrowRight, BookOpen } from "lucide-react";
 
+let cached = null;
+
 export default function BlogSection() {
-  const [posts, setPosts]  = useState([]);
-  const [loading, setLoad] = useState(true);
+  const [posts, setPosts]  = useState(cached || []);
+  const [loading, setLoad] = useState(!cached);
+  const ref = useRef(true);
 
   useEffect(() => {
-    const controller = new AbortController();
-    api.get("/blog", { signal: controller.signal })
-      .then(r => setPosts(r.data.data))
-      .catch(() => {})
-      .finally(() => { if (!controller.signal.aborted) setLoad(false); });
-    return () => controller.abort();
+    ref.current = true;
+    if (!cached) {
+      api.get("/blog")
+        .then(r => { if (ref.current) { cached = r.data.data; setPosts(cached); } })
+        .catch(() => {})
+        .finally(() => { if (ref.current) setLoad(false); });
+    } else {
+      setLoad(false);
+    }
+    return () => { ref.current = false; };
   }, []);
 
   const containerVariants = {
