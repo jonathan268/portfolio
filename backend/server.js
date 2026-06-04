@@ -32,7 +32,8 @@ app.use("/api/projects", require("./routes/projects"));
 app.use("/api/blog",     require("./routes/blog"));
 app.use("/api/skills",     require("./routes/skills"));
 app.use("/api/categories", require("./routes/categories"));
-app.use("/api/messages", require("./routes/messages"));
+app.use("/api/messages",    require("./routes/messages"));
+app.use("/api/newsletter", require("./routes/newsletter"));
 
 // ── Health check ────────────────────────────
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));

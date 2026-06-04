@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import WhatsAppButton from "./components/WhatsAppButton";
 import SplashScreen from "./components/SplashScreen";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -18,6 +19,7 @@ const AdminSkills = lazy(() => import("./pages/admin/AdminSkills"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
 const AdminComments = lazy(() => import("./pages/admin/AdminComments"));
 const AdminCategories = lazy(() => import("./pages/admin/AdminCategories"));
+const AdminNewsletter = lazy(() => import("./pages/admin/AdminNewsletter"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-deep-space">
@@ -34,6 +36,7 @@ export default function App() {
       {!ready && <SplashScreen onFinish={finish} />}
       <AuthProvider>
         <Navbar />
+        <WhatsAppButton />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -55,6 +58,7 @@ export default function App() {
               <Route path="skills" element={<AdminSkills />} />
               <Route path="comments" element={<AdminComments />} />
               <Route path="categories" element={<AdminCategories />} />
+              <Route path="newsletter" element={<AdminNewsletter />} />
               <Route path="messages" element={<AdminMessages />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
