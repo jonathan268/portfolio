@@ -6,7 +6,7 @@ const projectSchema = new mongoose.Schema({
   description: { type: String, required: true },
   features:    [{ type: String }],
   stack:       [{ type: String }],
-  type:        { type: String, enum: ["saas","web","api"], required: true },
+  type:        { type: String, required: true },
   featured:    { type: Boolean, default: false },
   live:        { type: String, default: null },
   github:      { type: String, default: null },

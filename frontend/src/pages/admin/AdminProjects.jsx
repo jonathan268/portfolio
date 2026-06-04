@@ -6,7 +6,7 @@ import api from "../../api";
 
 const EMPTY = {
   name:"", tagline:"", description:"", features:"", stack:"",
-  type:"saas", live:"", github:"", imageUrl:"", screenshots:[],
+  type:"", live:"", github:"", imageUrl:"", screenshots:[],
   summary:"", featureDetails:[],
   featured:false, published:true, order:0,
 };
@@ -212,7 +212,7 @@ function FeatureDetailsEditor({ value, onChange }) {
 }
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
-function Modal({ project, onClose, onSave }) {
+function Modal({ project, onClose, onSave, categories }) {
   const [form, setForm] = useState(
     project
       ? { ...project, features: project.features?.join("\n") || "", stack: project.stack?.join(", ") || "", imageUrl: project.imageUrl || "", screenshots: project.screenshots || [], summary: project.summary || "", featureDetails: project.featureDetails || [] }
@@ -271,9 +271,10 @@ function Modal({ project, onClose, onSave }) {
               <label className="font-mono text-[11px] text-brand-400 tracking-[1px] uppercase block mb-2">Type</label>
               <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-500/50 transition-colors"
                 value={form.type} onChange={e => set("type", e.target.value)}>
-                <option value="saas" className="bg-[#010214]">SaaS</option>
-                <option value="web" className="bg-[#010214]">Web App</option>
-                <option value="api" className="bg-[#010214]">API</option>
+                <option value="" className="bg-[#010214]">Sélectionner...</option>
+                {(categories || []).map(c => (
+                  <option key={c._id} value={c.key} className="bg-[#010214]">{c.name}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -351,10 +352,12 @@ function Textarea({ label, value, onChange, rows=3, placeholder }) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function AdminProjects() {
   const [projects, setProjects] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [modal, setModal]       = useState(null);
 
   const load = () => api.get("/projects/admin/all").then(r => setProjects(r.data.data)).catch(() => {});
-  useEffect(() => { load(); }, []);
+  const loadCategories = () => api.get("/categories").then(r => setCategories(r.data.data)).catch(() => {});
+  useEffect(() => { load(); loadCategories(); }, []);
 
   const del = async (id) => {
     if (!confirm("Supprimer ce projet ?")) return;
@@ -362,7 +365,8 @@ export default function AdminProjects() {
     catch { toast.error("Erreur lors de la suppression."); }
   };
 
-  const TYPE_COLOR = { saas:"#00b4d8", web:"#48cae4", api:"#0096c7" };
+  const catMap = Object.fromEntries(categories.map(c => [c.key, c]));
+  const typeColor = (key) => catMap[key]?.color || "#00b4d8";
 
   return (
     <div className="max-w-5xl">
@@ -401,7 +405,7 @@ export default function AdminProjects() {
                   <img src={p.imageUrl} alt={p.name} className="object-cover w-full h-full" />
                 </div>
               ) : (
-                <div className="w-1.5 h-12 rounded-full shrink-0" style={{ background: TYPE_COLOR[p.type] || "#00b4d8" }} />
+                <div className="w-1.5 h-12 rounded-full shrink-0" style={{ background: typeColor(p.type) }} />
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
@@ -412,7 +416,7 @@ export default function AdminProjects() {
                 <span className="font-sans text-[14px] text-white/50 truncate block">{p.tagline}</span>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <span className="font-mono text-[11px] text-white/40 border border-white/10 rounded-full px-3 py-1 bg-white/5">{p.type}</span>
+                <span className="font-mono text-[11px] text-white/40 border border-white/10 rounded-full px-3 py-1 bg-white/5">{catMap[p.type]?.name || p.type}</span>
                 <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-1">
                   <button className="p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors" onClick={() => setModal(p)}>
                     <Edit2 size={16} />
@@ -435,6 +439,7 @@ export default function AdminProjects() {
       <AnimatePresence>
         {modal && (
           <Modal project={modal === "new" ? null : modal}
+            categories={categories}
             onClose={() => setModal(null)}
             onSave={() => { setModal(null); load(); }} />
         )}

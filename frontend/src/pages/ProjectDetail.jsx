@@ -8,6 +8,7 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imgIndex, setImgIndex] = useState(0);
 
@@ -18,6 +19,7 @@ export default function ProjectDetail() {
       .then((r) => setProject(r.data.data))
       .catch(() => { if (!controller.signal.aborted) navigate("/projects", { replace: true }); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    api.get("/categories").then(r => setCategories(r.data.data)).catch(() => {});
     return () => controller.abort();
   }, [id]);
 
@@ -30,6 +32,8 @@ export default function ProjectDetail() {
   }
 
   if (!project) return null;
+
+  const categoryName = categories.find(c => c.key === project.type)?.name || project.type;
 
   const screenshots = project.screenshots?.length > 0 ? project.screenshots : (project.imageUrl ? [project.imageUrl] : []);
 
@@ -54,7 +58,7 @@ export default function ProjectDetail() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <span className="px-3 py-1 font-mono text-[11px] font-medium tracking-wider text-white uppercase rounded-full bg-white/10 backdrop-blur-md border border-white/20">
-              {project.type}
+              {categoryName}
             </span>
             {project.featured && (
               <span className="flex items-center gap-1 px-3 py-1 font-mono text-[11px] font-medium tracking-wider uppercase rounded-full bg-brand-400/20 text-brand-400 border border-brand-400/30 backdrop-blur-md">
@@ -199,7 +203,7 @@ export default function ProjectDetail() {
               <div className="space-y-3 font-sans text-[14px]">
                 <div className="flex justify-between">
                   <span className="text-white/40">Type</span>
-                  <span className="text-white capitalize">{project.type === "saas" ? "SaaS" : project.type === "web" ? "Web App" : "API"}</span>
+                  <span className="text-white capitalize">{categoryName}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white/40">Captures</span>

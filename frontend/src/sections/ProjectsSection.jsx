@@ -3,15 +3,9 @@ import { Sparkles, ArrowUpRight, Github, Code2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../api";
 
-const FILTERS = [
-  { key: "all", label: "Tous" },
-  { key: "saas", label: "SaaS" },
-  { key: "web", label: "Web App" },
-  { key: "api", label: "API" },
-];
-
 export default function ProjectsSection() {
   const [projects, setProjects] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
@@ -21,8 +15,14 @@ export default function ProjectsSection() {
       .then((r) => setProjects(r.data.data))
       .catch(() => {})
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    api.get("/categories").then(r => setCategories(r.data.data)).catch(() => {});
     return () => controller.abort();
   }, []);
+
+  const FILTERS = useMemo(() => [
+    { key: "all", label: "Tous" },
+    ...categories.map(c => ({ key: c.key, label: c.name, color: c.color })),
+  ], [categories]);
 
   const filtered = useMemo(
     () => filter === "all" ? projects : projects.filter((p) => p.type === filter),
@@ -117,7 +117,7 @@ export default function ProjectsSection() {
                   {/* Badges */}
                   <div className="absolute top-5 left-5 flex gap-2">
                     <span className="px-3 py-1 font-mono text-[10px] font-medium tracking-wider text-white uppercase rounded-full bg-white/10 backdrop-blur-md border border-white/20">
-                      {p.type}
+                      {categories.find(c => c.key === p.type)?.name || p.type}
                     </span>
                     {p.featured && (
                       <span className="flex items-center gap-1 px-3 py-1 font-mono text-[10px] font-medium tracking-wider uppercase rounded-full bg-brand-400/20 text-brand-400 border border-brand-400/30 backdrop-blur-md shadow-[0_0_10px_rgba(72,202,228,0.2)]">

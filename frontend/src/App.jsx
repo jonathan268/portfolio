@@ -17,6 +17,7 @@ const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
 const AdminSkills = lazy(() => import("./pages/admin/AdminSkills"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
 const AdminComments = lazy(() => import("./pages/admin/AdminComments"));
+const AdminCategories = lazy(() => import("./pages/admin/AdminCategories"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-deep-space">
@@ -53,6 +54,7 @@ export default function App() {
               <Route path="blog" element={<AdminBlog />} />
               <Route path="skills" element={<AdminSkills />} />
               <Route path="comments" element={<AdminComments />} />
+              <Route path="categories" element={<AdminCategories />} />
               <Route path="messages" element={<AdminMessages />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
