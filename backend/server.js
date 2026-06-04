@@ -34,6 +34,7 @@ app.use("/api/skills",     require("./routes/skills"));
 app.use("/api/categories", require("./routes/categories"));
 app.use("/api/messages",    require("./routes/messages"));
 app.use("/api/newsletter", require("./routes/newsletter"));
+app.use("/api/analytics",  require("./routes/analytics"));
 
 // ── Health check ────────────────────────────
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));
@@ -41,8 +42,11 @@ app.get("/api/health", (_, res) => res.json({ status: "ok" }));
 // ── Public profile ─────────────────────────
 app.get("/api/profile", async (_, res) => {
   try {
-    const admin = await Admin.findOne().select("email profileImage");
-    res.json({ success: true, data: admin || { email: "", profileImage: null } });
+    const admin = await Admin.findOne().select("email profileImage name tagline bio titles techStack stats socialLinks available");
+    res.json({ success: true, data: admin || {
+      email: "", profileImage: null, name: "", tagline: "", bio: "",
+      titles: [], techStack: [], stats: [], socialLinks: {}, available: true,
+    } });
   } catch {
     res.status(500).json({ success: false, message: "Erreur serveur" });
   }
@@ -66,6 +70,19 @@ async function bootstrapData() {
     await Admin.create({
       email: process.env.ADMIN_EMAIL || "admin@portfolio.cm",
       password: process.env.ADMIN_PASSWORD || "Admin@2024!",
+      name: process.env.ADMIN_NAME || "Jonathan",
+      titles: ["Fullstack Web Developer", "SaaS Builder", "API Architect", "African Tech Creator"],
+      techStack: ["React", "Node.js", "Express", "Laravel", "MongoDB", "MySQL", "Docker"],
+      stats: [
+        { label: "Expérience", value: "2+ ans" },
+        { label: "Projets livrés", value: "10+" },
+        { label: "Localisation", value: "Yaoundé" },
+      ],
+      socialLinks: {
+        github: "https://github.com/jonathan268",
+        linkedin: "https://linkedin.com",
+        email: "darrenjonathan97@gmail",
+      },
     });
     console.log("👤 Admin par défaut créé");
   }

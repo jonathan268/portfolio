@@ -5,6 +5,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import WhatsAppButton from "./components/WhatsAppButton";
 import SplashScreen from "./components/SplashScreen";
+import useTracking from "./hooks/useTracking";
+
+function TrackPage() { useTracking(); return null; }
 
 const Home = lazy(() => import("./pages/Home"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
@@ -20,6 +23,7 @@ const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
 const AdminComments = lazy(() => import("./pages/admin/AdminComments"));
 const AdminCategories = lazy(() => import("./pages/admin/AdminCategories"));
 const AdminNewsletter = lazy(() => import("./pages/admin/AdminNewsletter"));
+const AdminProfile = lazy(() => import("./pages/admin/AdminProfile"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-deep-space">
@@ -35,6 +39,7 @@ export default function App() {
     <>
       {!ready && <SplashScreen onFinish={finish} />}
       <AuthProvider>
+        <TrackPage />
         <Navbar />
         <WhatsAppButton />
         <Suspense fallback={<PageLoader />}>
@@ -57,6 +62,7 @@ export default function App() {
               <Route path="blog" element={<AdminBlog />} />
               <Route path="skills" element={<AdminSkills />} />
               <Route path="comments" element={<AdminComments />} />
+              <Route path="profile" element={<AdminProfile />} />
               <Route path="categories" element={<AdminCategories />} />
               <Route path="newsletter" element={<AdminNewsletter />} />
               <Route path="messages" element={<AdminMessages />} />

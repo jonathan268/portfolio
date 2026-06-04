@@ -1,10 +1,11 @@
 import { NavLink, useNavigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Rocket, FileText, Zap, MessageCircle, Mail, LogOut, Terminal, Tag, Newspaper } from "lucide-react";
+import { LayoutDashboard, Rocket, FileText, Zap, MessageCircle, Mail, LogOut, Terminal, Tag, Newspaper, User } from "lucide-react";
 
 const NAV = [
   { to: "/admin/dashboard", icon: <LayoutDashboard size={18} />, label: "Dashboard" },
+  { to: "/admin/profile", icon: <User size={18} />, label: "Profil" },
   { to: "/admin/projects", icon: <Rocket size={18} />, label: "Projets" },
   { to: "/admin/blog", icon: <FileText size={18} />, label: "Blog" },
   { to: "/admin/categories", icon: <Tag size={18} />, label: "Catégories" },

@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Project = require("../models/Project");
 const auth = require("../middleware/auth");
+const { notifySubscribers } = require("../services/notifier");
 
 // ── PUBLIC ──────────────────────────────────
 
@@ -46,6 +47,14 @@ router.get("/admin/all", auth, async (req, res) => {
 router.post("/", auth, async (req, res) => {
   try {
     const project = await Project.create(req.body);
+    if (project.published) {
+      notifySubscribers({
+        type: "project",
+        title: project.name,
+        excerpt: project.tagline || project.summary || project.name,
+        url: `/projects/${project._id}`,
+      }).catch(() => {});
+    }
     res.status(201).json({ success: true, data: project });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -55,8 +64,21 @@ router.post("/", auth, async (req, res) => {
 // PUT /api/projects/:id
 router.put("/:id", auth, async (req, res) => {
   try {
+    const previous = await Project.findById(req.params.id);
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!project) return res.status(404).json({ success: false, message: "Projet introuvable" });
+
+    const wasPublished = previous?.published;
+    const nowPublished = project.published;
+    if (!wasPublished && nowPublished) {
+      notifySubscribers({
+        type: "project",
+        title: project.name,
+        excerpt: project.tagline || project.summary || project.name,
+        url: `/projects/${project._id}`,
+      }).catch(() => {});
+    }
+
     res.json({ success: true, data: project });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });

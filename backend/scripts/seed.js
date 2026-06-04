@@ -17,9 +17,9 @@ async function seed() {
   const existing = await Admin.findOne({ email: ADMIN_EMAIL });
   if (!existing) {
     await Admin.create({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
-    console.log(`✅ Admin créé : ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
+    console.log(`Admin créé : ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
   } else {
-    console.log('ℹ️  Admin déjà existant, ignoré');
+    console.log('  Admin déjà existant, ignoré');
   }
 
   // ── Categories ─────────────────────────────
@@ -31,7 +31,7 @@ async function seed() {
     { name: 'Desktop', key: 'desktop', order: 4, color: '#7b2d8e' },
     { name: 'Mobile', key: 'mobile', order: 5, color: '#e76f51' },
   ]);
-  console.log('✅ Catégories insérées');
+  console.log(' Catégories insérées');
 
   // ── Skills ─────────────────────────────────
   await Skill.deleteMany({});

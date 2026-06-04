@@ -2,6 +2,7 @@ const router = require("express").Router();
 const BlogPost = require("../models/BlogPost");
 const Comment = require("../models/Comment");
 const auth = require("../middleware/auth");
+const { notifySubscribers } = require("../services/notifier");
 
 // ── ADMIN ROUTES (MUST BE BEFORE GENERIC :slug ROUTES) ───────
 
@@ -35,6 +36,14 @@ router.get("/admin/:id", auth, async (req, res) => {
 router.post("/", auth, async (req, res) => {
   try {
     const post = await BlogPost.create(req.body);
+    if (post.published) {
+      notifySubscribers({
+        type: "blog",
+        title: post.title,
+        excerpt: post.excerpt || post.title,
+        url: `/blog/${post.slug}`,
+      }).catch(() => {});
+    }
     res.status(201).json({ success: true, data: post });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -44,6 +53,7 @@ router.post("/", auth, async (req, res) => {
 // PUT /api/blog/:id
 router.put("/:id", auth, async (req, res) => {
   try {
+    const previous = await BlogPost.findById(req.params.id);
     const post = await BlogPost.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -52,6 +62,18 @@ router.put("/:id", auth, async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "Article introuvable" });
+
+    const wasPublished = previous?.published;
+    const nowPublished = post.published;
+    if (!wasPublished && nowPublished) {
+      notifySubscribers({
+        type: "blog",
+        title: post.title,
+        excerpt: post.excerpt || post.title,
+        url: `/blog/${post.slug}`,
+      }).catch(() => {});
+    }
+
     res.json({ success: true, data: post });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });

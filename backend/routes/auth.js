@@ -26,21 +26,38 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// GET /api/auth/me  (vérification token)
+// GET /api/auth/me
 router.get("/me", auth, (req, res) => {
   const admin = req.admin;
-  res.json({ success: true, data: { email: admin.email, profileImage: admin.profileImage } });
+  res.json({
+    success: true, data: {
+      email: admin.email,
+      profileImage: admin.profileImage,
+      name: admin.name,
+      tagline: admin.tagline,
+      bio: admin.bio,
+      titles: admin.titles,
+      techStack: admin.techStack,
+      stats: admin.stats,
+      socialLinks: admin.socialLinks,
+      available: admin.available,
+    }
+  });
 });
 
-// PUT /api/auth/profile  (mettre à jour le profil)
+// PUT /api/auth/profile
 router.put("/profile", auth, async (req, res) => {
   try {
-    const { profileImage } = req.body;
-    const admin = await Admin.findByIdAndUpdate(
-      req.admin._id,
-      { profileImage: profileImage || null },
-      { new: true }
-    );
+    const allowed = [
+      "profileImage", "name", "tagline", "bio", "titles",
+      "techStack", "stats", "socialLinks", "available",
+    ];
+    const update = {};
+    for (const key of allowed) {
+      if (key in req.body) update[key] = req.body[key];
+    }
+
+    const admin = await Admin.findByIdAndUpdate(req.admin._id, update, { new: true });
     res.json({ success: true, data: { email: admin.email, profileImage: admin.profileImage } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

@@ -1,5 +1,4 @@
 import HeroSection    from "../sections/HeroSection";
-import AboutSection   from "../sections/AboutSection";
 import SkillsSection  from "../sections/SkillsSection";
 import ProjectsSection from "../sections/ProjectsSection";
 import BlogSection    from "../sections/BlogSection";
@@ -13,8 +12,6 @@ export default function Home() {
   return (
     <main>
       <HeroSection />
-      <Divider />
-      <AboutSection />
       <Divider />
       <SkillsSection />
       <Divider />
