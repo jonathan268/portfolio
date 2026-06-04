@@ -38,26 +38,24 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-deep-space">
-      {/* Background Orbs */}
       <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-brand-700/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute top-[40%] left-[-10%] w-[40vw] h-[40vw] bg-brand-400/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 px-[6vw]">
-        
-        {/* Navigation & Header */}
+
         <div className="container-md mx-auto">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-16"
           >
-            <button 
+            <button
               onClick={() => navigate("/")}
               className="flex items-center gap-2 text-white/50 hover:text-white transition-colors font-mono text-[13px] mb-8"
             >
               <ArrowLeft size={16} /> Retour à l'accueil
             </button>
-            
+
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div>
                 <h1 className="font-display font-black text-[40px] md:text-[56px] text-white leading-tight tracking-tight mb-4">
@@ -84,120 +82,124 @@ export default function ProjectsPage() {
           </motion.div>
         </div>
 
-        {/* Projects Grid - Full width */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+        {/* ── Bento Grid ── */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 auto-rows-[minmax(280px,auto)]">
           <AnimatePresence mode="popLayout">
             {loading && Array.from({ length: 6 }).map((_, i) => (
-              <motion.div 
-                key={`skeleton-${i}`} 
+              <motion.div
+                key={`skeleton-${i}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="glass-panel animate-pulse min-h-[400px]"
+                className={`glass-panel animate-pulse ${i === 0 ? "md:col-span-2 md:row-span-2 min-h-[520px]" : "min-h-[280px]"}`}
               >
-                <div className="w-full h-56 bg-white/5" />
-                <div className="p-8">
-                  <div className="w-2/3 h-8 bg-white/10 rounded mb-4" />
-                  <div className="w-full h-4 bg-white/5 rounded mb-2" />
-                  <div className="w-4/5 h-4 bg-white/5 rounded" />
-                </div>
+                <div className="w-full h-full bg-white/5 rounded-2xl" />
               </motion.div>
             ))}
 
-            {!loading && filtered.map((p) => (
-                <motion.div 
+            {!loading && filtered.map((p, i) => {
+              const isHero = i % 4 === 0;
+              const isTall = i % 4 === 3;
+              return (
+                <motion.div
                   key={p._id}
                   layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4 }}
-                  className="bento-card group"
+                  transition={{ duration: 0.45, delay: i * 0.04 }}
+                  className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] cursor-pointer
+                    ${isHero ? "md:col-span-2 md:row-span-2 min-h-[360px] md:min-h-[520px]" : "min-h-[220px] md:min-h-[280px]"}
+                  `}
                   onClick={() => navigate(`/projects/${p._id}`)}
                 >
-                {/* ── Image Header ── */}
-                <div className="relative w-full h-64 overflow-hidden rounded-t-[24px]">
-                  {p.imageUrl ? (
-                    <img
-                      src={p.imageUrl}
-                      alt={p.name}
-                      loading="lazy"
-                      className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
-                      onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/[0.02]" />
-                  )}
-                  
-                  {/* Overlay Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#010214] via-[#010214]/40 to-transparent opacity-90" />
+                  {/* Image */}
+                  <div className="absolute inset-0">
+                    {p.imageUrl ? (
+                      <img
+                        src={p.imageUrl}
+                        alt={p.name}
+                        loading="lazy"
+                        className="object-cover w-full h-full transition-all duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-brand-400/10 to-brand-600/10" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#010214] via-[#010214]/60 to-transparent" />
+                    {isHero && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-brand-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    )}
+                  </div>
 
                   {/* Badges */}
-                  <div className="absolute top-5 left-5 flex gap-2">
+                  <div className="absolute top-5 left-5 flex gap-2 z-10">
                     <span className="px-3 py-1 font-mono text-[10px] font-medium tracking-wider text-white uppercase rounded-full bg-white/10 backdrop-blur-md border border-white/20">
                       {categories.find(c => c.key === p.type)?.name || p.type}
                     </span>
                     {p.featured && (
-                      <span className="flex items-center gap-1 px-3 py-1 font-mono text-[10px] font-medium tracking-wider uppercase rounded-full bg-brand-400/20 text-brand-400 border border-brand-400/30 backdrop-blur-md shadow-[0_0_10px_rgba(72,202,228,0.2)]">
+                      <span className="flex items-center gap-1 px-3 py-1 font-mono text-[10px] font-medium tracking-wider uppercase rounded-full bg-brand-400/20 text-brand-400 border border-brand-400/30 backdrop-blur-md">
                         <Sparkles size={12} /> Featured
                       </span>
                     )}
                   </div>
-                </div>
 
-                {/* ── Content ── */}
-                <div className="relative flex flex-col flex-1 p-8 pt-0 outline-none">
-                  {/* Lifted content area over gradient */}
-                  <div className="-mt-12 mb-6">
-                     <h3 className="font-display font-bold text-[28px] text-white leading-tight mb-2 group-hover:text-brand-400 transition-colors">
-                       {p.name}
-                     </h3>
-                     <p className="font-sans text-[15px] font-medium text-brand-600">
-                       {p.tagline}
-                     </p>
-                  </div>
-
-                  <p className="font-sans text-[15px] text-white/50 leading-[1.8] mb-8">
-                    {p.description}
-                  </p>
-
-                  {/* Tech stack */}
-                  {p.stack?.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-3 mb-8 mt-auto">
-                      {p.stack.map((s) => (
-                         <div key={s} className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/70 text-[13px] hover:text-white transition-colors cursor-default hover:bg-white/10">
-                           {s}
-                         </div>
-                      ))}
+                  {/* Content */}
+                  <div className={`absolute bottom-0 left-0 right-0 z-10 ${isHero ? "p-8 md:p-10" : "p-6"}`}>
+                    {isHero && (
+                      <p className="font-mono text-[11px] text-brand-400 tracking-[2px] uppercase mb-3">
+                        {p.stack?.[0] || "Projet"}
+                      </p>
+                    )}
+                    <h3 className={`font-display font-bold text-white leading-tight group-hover:text-brand-400 transition-colors ${isHero ? "text-[28px] md:text-[36px] mb-2" : "text-[20px] mb-1"}`}>
+                      {p.name}
+                    </h3>
+                    <p className={`font-sans text-white/60 ${isHero ? "text-[15px] mb-6" : "text-[13px] mb-4"}`}>
+                      {p.tagline}
+                    </p>
+                    {isHero && (
+                      <>
+                        <p className="font-sans text-[14px] text-white/40 leading-[1.7] mb-6 line-clamp-2 max-w-xl">
+                          {p.description}
+                        </p>
+                        {p.stack?.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-6">
+                            {p.stack.slice(0, 4).map((s) => (
+                              <span key={s} className="px-3 py-1 rounded-lg bg-white/10 border border-white/10 text-white/70 text-[12px]">
+                                {s}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                    <div className="flex items-center gap-4">
+                      <span className="flex items-center gap-1.5 font-medium text-[13px] text-brand-400 hover:text-white transition-colors">
+                        Détails <ExternalLink size={14} />
+                      </span>
+                      {p.live && (
+                        <a href={p.live} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()}
+                          className="flex items-center gap-1.5 font-medium text-[13px] text-white/70 hover:text-white transition-colors">
+                          Live <ArrowUpRight size={14} />
+                        </a>
+                      )}
+                      {p.github && (
+                        <a href={p.github} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()}
+                          className="flex items-center gap-1.5 font-medium text-[13px] text-white/50 hover:text-white transition-colors ml-auto">
+                          <Github size={14} />
+                        </a>
+                      )}
                     </div>
-                  )}
-
-                  {/* Footer Actions */}
-                  <div className="flex gap-4 pt-6 border-t border-white/10 mt-auto">
-                    <button className="flex items-center gap-2 font-medium text-[14px] text-brand-400 hover:text-white transition-colors">
-                      Détails <ExternalLink size={16} />
-                    </button>
-                    {p.live && (
-                      <a href={p.live} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-2 font-medium text-[14px] text-white hover:text-brand-400 transition-colors">
-                        View Live <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </a>
-                    )}
-                    {p.github && (
-                      <a href={p.github} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-2 font-medium text-[14px] text-white/50 hover:text-white transition-colors ml-auto">
-                        <Github size={16} /> Source
-                      </a>
-                    )}
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </motion.div>
 
         {!loading && filtered.length === 0 && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="py-24 text-center"
           >
             <p className="font-mono text-[14px] text-white/40">Aucun projet trouvé dans cette catégorie.</p>
