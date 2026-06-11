@@ -1,16 +1,15 @@
-const nodemailer = require("nodemailer");
+let nodemailer;
+try { nodemailer = require("nodemailer"); } catch { nodemailer = null; }
 
 let transporter = null;
 
 function getTransport() {
   if (transporter) return transporter;
+  if (!nodemailer) return null;
 
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env;
 
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
-    console.warn("⚠️  SMTP non configuré — les emails ne seront pas envoyés. Définissez SMTP_HOST, SMTP_USER, SMTP_PASS dans .env");
-    return null;
-  }
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null;
 
   transporter = nodemailer.createTransport({
     host: SMTP_HOST,
