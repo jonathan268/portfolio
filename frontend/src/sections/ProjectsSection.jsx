@@ -102,7 +102,7 @@ export default function ProjectsSection() {
                     {p.imageUrl ? (
                       <img
                         src={p.imageUrl}
-                        alt={p.name}
+                        alt={`Capture d'écran du projet ${p.name}`}
                         loading="lazy"
                         className="object-cover w-full h-full transition-all duration-700 group-hover:scale-110"
                       />

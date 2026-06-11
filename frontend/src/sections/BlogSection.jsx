@@ -75,7 +75,7 @@ export default function BlogSection() {
                   <div className="h-40 w-full overflow-hidden border-b border-white/10 rounded-t-[24px]">
                     <img 
                       src={post.cover} 
-                      alt={post.title} 
+                      alt={`Couverture de l'article : ${post.title}`} 
                       loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />

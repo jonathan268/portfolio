@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Github, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../api";
+import useSEO from "../hooks/useSEO";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -11,6 +12,20 @@ export default function ProjectDetail() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imgIndex, setImgIndex] = useState(0);
+
+  useSEO({
+    title: project ? `${project.name} — ${project.tagline}` : "Projet",
+    description: project?.description?.slice(0, 160) || "Détail d'un projet web réalisé par Jonathan, développeur fullstack basé à Yaoundé.",
+    jsonLd: project ? {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      "name": project.name,
+      "description": project.description || project.tagline,
+      "url": `https://jonathan.cm/projects/${id}`,
+      "author": { "@type": "Person", "name": "Jonathan" },
+      "keywords": project.stack?.join(", "),
+    } : null,
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -102,7 +117,7 @@ export default function ProjectDetail() {
                 <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                   <img
                     src={screenshots[imgIndex]}
-                    alt={`Capture ${imgIndex + 1}`}
+                    alt={`Capture d'écran du projet ${project.name} — vue ${imgIndex + 1}`}
                     loading="lazy"
                     className="w-full aspect-video object-cover"
                   />
@@ -131,7 +146,7 @@ export default function ProjectDetail() {
                     {screenshots.map((url, i) => (
                       <button key={i} onClick={() => setImgIndex(i)}
                         className={`shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${i === imgIndex ? 'border-brand-400 opacity-100' : 'border-transparent opacity-50 hover:opacity-80'}`}>
-                        <img src={url} alt={`Miniature ${i + 1}`} loading="lazy" className="object-cover w-full h-full" />
+                        <img src={url} alt={`Miniature ${i + 1} du projet ${project.name}`} loading="lazy" className="object-cover w-full h-full" />
                       </button>
                     ))}
                   </div>

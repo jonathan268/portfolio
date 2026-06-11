@@ -3,6 +3,7 @@ import { Sparkles, ArrowUpRight, Github, ArrowLeft, ExternalLink } from "lucide-
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import useSEO from "../hooks/useSEO";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
@@ -10,6 +11,11 @@ export default function ProjectsPage() {
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useSEO({
+    title: "Projets — Portfolio Fullstack",
+    description: "Explorez mes projets web : applications React, API Node.js, SaaS Laravel et plus. Développeur fullstack basé à Yaoundé, Cameroun.",
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -118,7 +124,7 @@ export default function ProjectsPage() {
                     {p.imageUrl ? (
                       <img
                         src={p.imageUrl}
-                        alt={p.name}
+                        alt={`Capture d'écran du projet ${p.name}`}
                         loading="lazy"
                         className="object-cover w-full h-full transition-all duration-700 group-hover:scale-110"
                       />

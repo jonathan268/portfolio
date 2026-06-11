@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import { motion, useScroll, useSpring } from "framer-motion";
 import api from "../api";
 import CommentSection from "../components/CommentSection";
+import useSEO from "../hooks/useSEO";
 
 const COVER_COLORS = ["#03045e", "#023e8a", "#0077b6", "#010214"];
 const TAG_COLOR = { SaaS: "#00b4d8", Security: "#48cae4", MongoDB: "#0096c7" };
@@ -36,6 +37,30 @@ export default function BlogPostPage() {
   const [post, setPost] = useState(null);
   const [loading, setLoad] = useState(true);
   const [notFound, set404] = useState(false);
+
+  useSEO({
+    title: post ? `${post.title} — Blog` : "Blog",
+    description: post?.excerpt?.slice(0, 160) || "Article de blog par Jonathan, développeur fullstack basé à Yaoundé, Cameroun.",
+    jsonLd: post ? {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": post.title,
+      "description": post.excerpt,
+      "datePublished": post.createdAt,
+      "author": {
+        "@type": "Person",
+        "name": "Jonathan",
+        "url": "https://jonathan.cm",
+      },
+      "image": post.cover || undefined,
+      "keywords": post.tag,
+      "publisher": {
+        "@type": "Person",
+        "name": "Jonathan",
+      },
+      "url": `https://jonathan.cm/blog/${slug}`,
+    } : null,
+  });
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -111,7 +136,7 @@ export default function BlogPostPage() {
           <>
             <img
               src={post.cover}
-              alt="cover"
+              alt={`Couverture de l'article : ${post.title}`}
               className="absolute inset-0 object-cover w-full h-full opacity-60"
             />
             <div
